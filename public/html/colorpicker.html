@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head><title>Express</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+<script src="/socket.io/socket.io.js">
+
+</script>
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
+<script src="http://rawgit.com/DavidDurman/FlexiColorPicker/master/colorpicker.min.js"></script>
+<h1>Express</h1>
+<p>Welcome to Express</p>
+<button onclick="sendMode()">Click</button>
+<button onclick="sendState()">state</button>
+<button onclick="sendBreathe()">breathe</button>
+<button onclick="sendColor()">color</button>
+<div id="picker"></div>
+<div id="slider"></div>
+<p id="hexColor"></p>
+<script>var socket = io('//192.168.1.112:3000');
+socket.on('color', function (data) {
+    console.log(data);
+
+
+});
+var sendMode = function () {
+    socket.emit('mode', {mode: 'rainbow'});
+}
+var sendState = function () {
+    socket.emit('state', {state: 'stop'});
+}
+
+var sendBreathe = function () {
+    socket.emit('mode', {mode: 'breathe', color: 'FF00FF'});
+}
+
+var sendColor = function () {
+    socket.emit('mode', {mode: 'color', color: 0xffffff});
+}
+
+ColorPicker(
+        document.getElementById('slider'),
+        document.getElementById('picker'),
+
+        function (hex, hsv, rgb) {
+
+            hex = hex.replace('#', '0x')
+            console.log("Color sent")
+            socket.emit('mode', {mode: 'color', color: hex});
+
+
+        });</script>
+</body>
+</html>
