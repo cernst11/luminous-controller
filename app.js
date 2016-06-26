@@ -38,6 +38,8 @@ app.set('view engine', 'jade');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.io = io;
     next();
 });
@@ -58,30 +60,48 @@ process.on('SIGINT', function () {
 });
 
 
-router.get('/breathe', function(req, res) {
+//rest controller
+router.post('/effects', function (req, res) {
     //ws281x.render(pixelData);
+    var offset = 0;
     clearInterval(interval);
     var startValue = Date.now();
-    interval = setInterval(function () {
-        breathe.breathe(startValue, ws281x)
-    }, 1000 / 30);
+    switch (req.body.mode) {
+        case 'breathe':
+            power = true;
+            clearInterval(interval);
+            interval = setInterval(function () {
+                breathe.breathe(startValue, ws281x)
+            }, 1000 / 30);
+            break;
+        case 'rainbow' :
+            power = true;
+            clearInterval(interval);
+            interval = setInterval(function () {
+                offset = rainbow.rainbow(NUM_LEDS, pixelData, offset, ws281x);
+            }, 1000 / 30);
+            break;
 
-    res.json({ message: 'Effect Breathe has been set' });
+    }
+
+
+    res.json({message: req.body.mode + ' effect set'});
 });
 
-router.get('/stop', function(req, res) {
+//stop the the running function
+router.get('/stop', function (req, res) {
     //ws281x.render(pixelData);
     clearInterval(interval);
-    res.json({ message: 'hooray! welcome to our api!' });
+    res.json({message: 'Mode has been stopped'});
 });
 
-router.get('/off', function(req, res) {
+router.get('/off', function (req, res) {
     power = false;
     clearInterval(interval);
     var colorValue = 0x000000;
-    color.color(NUM_LEDS, pixelData, ws281x, colorValue)
+    color.color(NUM_LEDS, pixelData, ws281x, colorValue);
+    res.json({message: 'Light has been turned off'});
 });
-
 
 
 io.on('connection', function (socket) {
@@ -191,7 +211,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
-app.use('/effects', router);
+app.use('/mode', router);
 app.use('/', routes);
 app.use('/users', users);
 
