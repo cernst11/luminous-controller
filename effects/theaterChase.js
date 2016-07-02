@@ -24,7 +24,8 @@ var theaterChase = function (pixelData, lit, ws281x, colorValue){
 var  startTheaterChase = function(num_leds, pixelData, ws281x, colorValue, interval, stepRate){
 
     stepRate = (typeof stepRate  ==='undefined') ? 250 : stepRate;
-    colorValue = (typeof  stepRate  === 'undefined') ? 0xFFFFFF : colorValue
+    colorValue = (typeof  colorValue  === 'undefined') ? 0xFFFFFF : colorValue
+    console.log(colorValue);
 
     color.color(num_leds, pixelData, ws281x, black);
     var lit  = 1;

@@ -38,12 +38,15 @@ var rainbow =  function (num_leds, pixelData, offset, ws281x) {
 
 }
 
-var startRainbow = function  (NUM_LEDS, pixelData,  ws281x, interval){
+var startRainbow = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRate){
+
+    refreshRate = (typeof refreshRate  ==='undefined') ? (1000/30) : refreshRate;
+
     var offSet= 0;
     interval = setInterval(function () {
         offSet  = rainbow(NUM_LEDS, pixelData, offSet, ws281x);
 
-    }, 1000 / 30);
+    }, refreshRate);
 
     return interval;
 }

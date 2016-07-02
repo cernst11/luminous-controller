@@ -23,17 +23,12 @@ var breathe = function (startValue, ws281x) {
  * Start the effect
  * @param ws281x The strip object to control
  */
-var  startBreathe = function (ws281x, interval, refreshRate) {
-
-    refreshRate = (typeof refreshRate  ==='undefined') ? (1000/30) : refreshRate;
-    
+var  startBreathe = function (ws281x) {
     //clearInterval(interval);
     var startValue = Date.now();
     interval = setInterval(function () {
         breathe(startValue, ws281x);
-    }, refreshRate);
-
-    return interval;
+    }, 1000 / 30);
 }
 
 module.exports.breathe = startBreathe;

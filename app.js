@@ -63,21 +63,18 @@ process.on('SIGINT', function () {
 var currentMode;
 //rest controller
 router.post('/effects', function (req, res) {
-    //ws281x.render(pixelData);
-    var offset = 0;
+
     clearInterval(interval);
-    var startValue = Date.now();
+    console.log(req.body);
     switch (req.body.mode) {
         case 'breathe':
             power = true;
-            interval = breathe.breathe(ws281x, interval);
+            interval = breathe.breathe(ws281x, interval, req.body.refresh);
             console.log(interval);
             break;
         case 'rainbow' :
             power = true;
-            console.log(interval);
-            interval = rainbow.rainbow( NUM_LEDS, pixelData,  ws281x, interval);
-            console.log(interval);
+            interval = rainbow.rainbow( NUM_LEDS, pixelData,  ws281x, interval, req.body.refresh);
             break;
         case 'theaterChase' :
             power = true;
