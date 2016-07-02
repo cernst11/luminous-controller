@@ -11,12 +11,26 @@ var rgb2Int = require('./colorHelper');
  * @param startValue A dateobject to start the start of the wave
  * @param ws281x The strip object to control
  */
-var breathe = function(startValue, ws281x){
+var breathe = function (startValue, ws281x) {
 
     var dt = Date.now() - startValue;
     ws281x.setBrightness(
-        Math.floor(Math.sin(dt/1000) * 128 + 128));
+        Math.floor(Math.sin(dt / 1000) * 128 + 128));
 
 }
 
-module.exports.breathe = breathe;
+/**
+ * Start the effect
+ * @param ws281x The strip object to control
+ */
+var  startBreathe = function (ws281x, interval) {
+    //clearInterval(interval);
+    var startValue = Date.now();
+    interval = setInterval(function () {
+        breathe(startValue, ws281x);
+    }, 1000 / 30);
+
+    return interval;
+}
+
+module.exports.breathe = startBreathe;

@@ -14,6 +14,7 @@ var rainbow = require('./effects/rainbow');
 var breathe = require('./effects/breathe');
 var color = require('./effects/color');
 var colorHelper = require('./effects/colorHelper');
+var theaterChase = require('./effects/theaterChase');
 
 //include routes
 var routes = require('./routes/index');
@@ -59,7 +60,7 @@ process.on('SIGINT', function () {
     });
 });
 
-
+var currentMode;
 //rest controller
 router.post('/effects', function (req, res) {
     //ws281x.render(pixelData);
@@ -69,18 +70,20 @@ router.post('/effects', function (req, res) {
     switch (req.body.mode) {
         case 'breathe':
             power = true;
-            clearInterval(interval);
-            interval = setInterval(function () {
-                breathe.breathe(startValue, ws281x)
-            }, 1000 / 30);
+            interval = breathe.breathe(ws281x, interval);
+            console.log(interval);
             break;
         case 'rainbow' :
             power = true;
-            clearInterval(interval);
-            interval = setInterval(function () {
-                offset = rainbow.rainbow(NUM_LEDS, pixelData, offset, ws281x);
-            }, 1000 / 30);
+            console.log(interval);
+            interval = rainbow.rainbow( NUM_LEDS, pixelData,  ws281x, interval);
+            console.log(interval);
             break;
+        case 'theaterChase' :
+            power = true;
+            interval = theaterChase.theaterChase( NUM_LEDS, pixelData,  ws281x, req.body.color , interval, req.body.refresh);
+            break;
+
 
     }
 
@@ -120,26 +123,21 @@ io.on('connection', function (socket) {
                 color.color(NUM_LEDS, pixelData, ws281x, colorValue)
                 console.log("The selected mode is color")
                 break;
-            case 'rainbow':
+/*            case 'rainbow':
                 power = true;
                 clearInterval(interval);
-                interval = setInterval(function () {
-                    offset = rainbow.rainbow(NUM_LEDS, pixelData, offset, ws281x);
-                }, 1000 / 30);
+                rainbow.startRainbow(NUM_LEDS, pixelData,  ws281x);
                 break;
             case 'strip' :
                 power = true;
-                clearInterval(interval)
+                clearInterval(interval);
+                theaterChase.startTheaterChase(NUM_LEDS, pixelData,  ws281x, 0xFF00FF);
                 break;
             case 'breathe' :
-                power = true;
                 clearInterval(interval);
-                //ws281x.render(pixelData);
-                var startValue = Date.now();
-                interval = setInterval(function () {
-                    breathe.breathe(startValue, ws281x)
-                }, 1000 / 30);
-                break;
+                power = true;
+                breathe.startBreathe(startValue, ws281x);
+                break;*/
         }
 
         console.log(data);

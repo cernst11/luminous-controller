@@ -38,6 +38,16 @@ var rainbow =  function (num_leds, pixelData, offset, ws281x) {
 
 }
 
-module.exports.rainbow = rainbow;
+var startRainbow = function  (NUM_LEDS, pixelData,  ws281x, interval){
+    var offSet= 0;
+    interval = setInterval(function () {
+        offSet  = rainbow(NUM_LEDS, pixelData, offSet, ws281x);
+
+    }, 1000 / 30);
+
+    return interval;
+}
+
+module.exports.rainbow = startRainbow;
 
 
