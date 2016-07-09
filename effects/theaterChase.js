@@ -2,24 +2,29 @@ var rgb2Int = require('./colorHelper');
 var color = require('./color');
 var black = 0x000000;
 
-
+/**
+ * Display the lights
+ * @param {object} pixelData - The strip pixel data
+ * @param {integer} lit - The iteration in the loop
+ * @param {object} ws281x - The strip object
+ * @param {integer} colorValue - The hex color value to set
+ */
 var theaterChase = function (pixelData, lit, ws281x, colorValue){
-
+    //set the pixel in the strip
     pixelData[lit] = colorValue;
-    //theaterChase (lit, pixelData, ws281x, 0xFFFFFF)
     ws281x.render(pixelData);
 };
 
 
 /**
  * Chase lights like in a theater
- * @param num_leds The number of leds   
- * @param pixelData The pixel data
- * @param ws281x The strip object
- * @param colorValue The color value to use
- * @param interval The interval object  
- * @param stepRate The rate at which the animation goes in milliseconds
- * @returns {number|*} The interval object
+ * @param {integer} num_leds - The number of leds
+ * @param {object} pixelData - The pixel data
+ * @param {object} ws281x - The strip object
+ * @param {integer} colorValue - The hex color value to use
+ * @param {integer} interval - The interval object
+ * @param {integer} stepRate - The rate at which the animation goes in milliseconds
+ * @returns {object} The interval object
  */
 var  startTheaterChase = function(num_leds, pixelData, ws281x, colorValue, interval, stepRate){
 

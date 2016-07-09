@@ -31,6 +31,7 @@ var io = require('socket.io')(server);
 var state = 'start';
 var power = false;
 var interval;
+var effect;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -66,6 +67,7 @@ router.post('/effects', function (req, res) {
 
     clearInterval(interval);
     console.log(req.body);
+    effect = req.body.mode;
     switch (req.body.mode) {
         case 'breathe':
             power = true;
@@ -81,11 +83,16 @@ router.post('/effects', function (req, res) {
             interval = theaterChase.theaterChase( NUM_LEDS, pixelData,  ws281x, req.body.color , interval, req.body.refresh);
             break;
 
-
     }
+    res.json({effect: req.body.mode, power_state : power, color: pixelData});
+});
 
+//stop the the running function
+router.post('/color', function (req, res) {
+    clearInterval(interval);
+    color.color(NUM_LEDS, pixelData, ws281x, req.body.color );
+    res.json({mode: req.body.mode, power_state : power, color: pixelData});
 
-    res.json({message: req.body.mode + ' effect set'});
 });
 
 //stop the the running function
@@ -95,6 +102,7 @@ router.get('/stop', function (req, res) {
     res.json({message: 'Mode has been stopped'});
 });
 
+//turn the lights off
 router.get('/off', function (req, res) {
     power = false;
     clearInterval(interval);
@@ -103,10 +111,16 @@ router.get('/off', function (req, res) {
     res.json({message: 'Light has been turned off'});
 });
 
+//get the
+router.get('/state', function (req, res){
+
+    res.json({ power_state : power, color: pixelData, mode: effect});
+
+});
+
 
 io.on('connection', function (socket) {
 
-    var offset = 0;
     socket.emit('color', {color: pixelData});
 
     //modes are effects
@@ -117,28 +131,10 @@ io.on('connection', function (socket) {
                 power = true;
                 clearInterval(interval);
                 var colorValue = data.color;
-                color.color(NUM_LEDS, pixelData, ws281x, colorValue)
-                console.log("The selected mode is color")
+                color.color(NUM_LEDS, pixelData, ws281x, colorValue);
                 break;
-/*            case 'rainbow':
-                power = true;
-                clearInterval(interval);
-                rainbow.startRainbow(NUM_LEDS, pixelData,  ws281x);
-                break;
-            case 'strip' :
-                power = true;
-                clearInterval(interval);
-                theaterChase.startTheaterChase(NUM_LEDS, pixelData,  ws281x, 0xFF00FF);
-                break;
-            case 'breathe' :
-                clearInterval(interval);
-                power = true;
-                breathe.startBreathe(startValue, ws281x);
-                break;*/
-        }
-
         console.log(data);
-    });
+    }});
 
     /**
      * State controls the play pause action
