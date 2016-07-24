@@ -15,11 +15,13 @@
     "fill-range": "^2.2.3",
     "for-in": "^0.1.5",
     "glob-parent": "^2.0.0",
+    "jsdoc": "^3.4.0",
     "morgan": "~1.6.1",
     "rpi-ws281x-native": "^0.8.1",
     "serve-favicon": "~2.3.0",
     "socket.io": "^1.4.6",
-    "vulcanize": "^1.14.8"
+    "vulcanize": "^1.14.8", 
+    "tinycolor2": "^1.4.1"
   },
   "devDependencies": {
     "browser-sync": "^2.7.7",

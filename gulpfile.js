@@ -216,58 +216,7 @@ gulp.task('clean', function() {
     return del(['.tmp', dist()]);
 });
 
-// Watch files for changes & reload
-/*gulp.task('serve', ['styles', 'elements'], function() {
-    browserSync({
-        port: 5000,
-        notify: false,
-        logPrefix: 'PSK',
-        snippetOptions: {
-            rule: {
-                match: '<span id="browser-sync-binding"></span>',
-                fn: function(snippet) {
-                    return snippet;
-                }
-            }
-        },
-        // Run as an https by uncommenting 'https: true'
-        // Note: this uses an unsigned certificate which on first access
-        //       will present a certificate warning in the browser.
-        // https: true,
-        server: {
-            baseDir: ['.tmp', 'app'],
-            middleware: [historyApiFallback()]
-        }
-    });
 
-    gulp.watch(['app/!**!/!*.html'], reload);
-    gulp.watch(['app/styles/!**!/!*.css'], ['styles', reload]);
-    gulp.watch(['app/elements/!**!/!*.css'], ['elements', reload]);
-    gulp.watch(['app/images/!**!/!*'], reload);
-});*/
-
-/*// Build and serve the output from the dist build
-gulp.task('serve:dist', ['default'], function() {
-    browserSync({
-        port: 5001,
-        notify: false,
-        logPrefix: 'PSK',
-        snippetOptions: {
-            rule: {
-                match: '<span id="browser-sync-binding"></span>',
-                fn: function(snippet) {
-                    return snippet;
-                }
-            }
-        },
-        // Run as an https by uncommenting 'https: true'
-        // Note: this uses an unsigned certificate which on first access
-        //       will present a certificate warning in the browser.
-        // https: true,
-        server: dist(),
-        middleware: [historyApiFallback()]
-    });
-});*/
 
 // Build production files, the default task
 gulp.task('default', ['clean'], function(cb) {
@@ -280,25 +229,6 @@ gulp.task('default', ['clean'], function(cb) {
         cb);
 });
 
-// Build then deploy to GitHub pages gh-pages branch
-gulp.task('build-deploy-gh-pages', function(cb) {
-    runSequence(
-        'default',
-        'deploy-gh-pages',
-        cb);
-});
-
-// Deploy to GitHub pages gh-pages branch
-gulp.task('deploy-gh-pages', function() {
-    return gulp.src(dist('**/*'))
-    // Check if running task from Travis CI, if so run using GH_TOKEN
-    // otherwise run using ghPages defaults.
-        .pipe($.if(process.env.TRAVIS === 'true', $.ghPages({
-            remoteUrl: 'https://$GH_TOKEN@github.com/polymerelements/polymer-starter-kit.git',
-            silent: true,
-            branch: 'gh-pages'
-        }), $.ghPages()));
-});
 
 // Load tasks for web-component-tester
 // Adds tasks for `gulp test:local` and `gulp test:remote`
@@ -306,5 +236,5 @@ gulp.task('deploy-gh-pages', function() {
 
 // Load custom tasks from the `tasks` directory
 try {
-    require('require-dir')('tasks');
+    require('require-dir')('tassks');
 } catch (err) {}

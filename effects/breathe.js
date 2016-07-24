@@ -1,9 +1,8 @@
 /**
- * Created by ernst on 5/28/16.
+ * Breathe the current lights in color brightness
  */
 
 
-var rgb2Int = require('./colorHelper');
 
 
 /**
@@ -26,7 +25,7 @@ var breathe = function (startValue, ws281x) {
 var  startBreathe = function (ws281x, interval, refreshRate) {
 
     refreshRate = (typeof refreshRate  ==='undefined') ? (1000/30) : refreshRate;
-    
+
     //clearInterval(interval);
     var startValue = Date.now();
     interval = setInterval(function () {

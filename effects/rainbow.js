@@ -1,10 +1,8 @@
 /**
- * Created by ernst on 5/28/16.
- * 
  * Rainbow effect
  */
 
-var rgb2Int = require('./colorHelper');
+var colorHelper = require('../helpers/colorHelper').colorHelper;
 
 /**
  * Helper funnction to calculate colors
@@ -14,11 +12,11 @@ var rgb2Int = require('./colorHelper');
 function colorwheel(pos) {
     pos = 255 - pos;
     if (pos < 85) {
-        return rgb2Int.rgb2Int(255 - pos * 3, 0, pos * 3);
+        return colorHelper.rgb2Int(255 - pos * 3, 0, pos * 3);
     }else if (pos < 170) {
-        pos -= 85; return rgb2Int.rgb2Int(0, pos * 3, 255 - pos * 3);
+        pos -= 85; return colorHelper.rgb2Int(0, pos * 3, 255 - pos * 3);
     }else {
-        pos -= 170; return rgb2Int.rgb2Int(pos * 3, 255 - pos * 3, 0);
+        pos -= 170; return colorHelper.rgb2Int(pos * 3, 255 - pos * 3, 0);
     }
 }
 
@@ -69,5 +67,3 @@ var startRainbow = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRat
 }
 
 module.exports.rainbow = startRainbow;
-
-

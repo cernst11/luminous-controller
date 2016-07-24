@@ -1,4 +1,4 @@
-var rgb2Int = require('./colorHelper');
+
 var color = require('./color');
 var black = 0x000000;
 
@@ -30,7 +30,6 @@ var  startTheaterChase = function(num_leds, pixelData, ws281x, colorValue, inter
 
     stepRate = (typeof stepRate  ==='undefined') ? 250 : stepRate;
     colorValue = (typeof  colorValue  === 'undefined') ? 0xFFFFFF : colorValue
-    console.log(colorValue);
 
     color.color(num_leds, pixelData, ws281x, black);
     var lit  = 1;
