@@ -3,12 +3,13 @@
  */
 
 
-var colorHelper1 = require('../helpers/colorHelper').colorHelper;
 /**
- *  Set a color for all the pixels
- * @param num_pixels
- * @param ws281x
- * @param color
+ * var - description  - Set the strip to a single color
+ *
+ * @param  {Integer} num_pixels The number of pixels
+ * @param  {Object} pixelData  The pixel data
+ * @param  {Object} ws281x     THe strip Object
+ * @param  {Integer} color      The hex integer color
  */
 var color = function(num_pixels, pixelData, ws281x, color){
     for(var i = 0; i < num_pixels; i++) {
@@ -17,4 +18,4 @@ var color = function(num_pixels, pixelData, ws281x, color){
     ws281x.render(pixelData);
 }
 
-module.exports.color = color;
+module.exports.setColor = color;

@@ -2,6 +2,7 @@
  * Rainbow effect
  */
 
+//import the colorHelper object
 var colorHelper = require('../helpers/colorHelper').colorHelper;
 
 /**
@@ -66,4 +67,4 @@ var startRainbow = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRat
     return interval;
 }
 
-module.exports.rainbow = startRainbow;
+module.exports.startRainbow = startRainbow;

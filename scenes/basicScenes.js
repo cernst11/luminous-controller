@@ -1,8 +1,9 @@
 /**
- * Created by ernst on 7/16/16.
+ * Show basic scene by slecting a theme color pallete
  */
 
-var intenseColors=[ 0x4B2E7E, 0xD21D1C, 0x004D9F, 0xEAB239, 0x12CE79, 0xDC209B];
+
+var intenseColors=[ 0x00BD9D, 0x1ECE6C, 0x2C97DD, 0x9C56B9, 0xF4CA1A, 0xE87E04, 0xEA4B35, 0xF69E00 , 0xD65400, 0xC33825  ];
 var relaxingColors=[0x78A1B5, 0xFEF0C9, 0xFEE3EA, 0xC9AC68, 0x036564, 0xFAB37F, 0x84D9D2];
 
 var color = require('../effects/color');
@@ -13,6 +14,16 @@ Array.prototype.randomElement = function () {
 };
 
 
+/**
+ * anonymous function - Show  a scene
+ *
+ * @param  {integer} num_leds     The number of leds
+ * @param  {Object} pixelData     The pixel colors
+ * @param  {Object} ws281x        The strip object
+ * @param  {String} scene         The scene to show
+ * @param  {Integer} divisions    The number of divisions
+ * @param  {String} divisionType  How to go from one divison to the next(Fade or Fixed) \
+ */
 var showScene = function (num_leds, pixelData, ws281x, scene,  divisions, divisionType){
 
      divisionType = (typeof divisionType  ==='undefined') ? (fixed) : divisionType;
@@ -31,7 +42,7 @@ var showScene = function (num_leds, pixelData, ws281x, scene,  divisions, divisi
       relaxing : relaxingColors
     };
 
-if(divisionType !== 'fade'  ){
+if(divisionType === 'fixed'  ){
     //keep array pos
     var pixelPos = 0;
     //loop through each divison
@@ -78,14 +89,14 @@ if(divisionType !== 'fade'  ){
       //make sure to show the last color in the pixel division
       pixelData[pixelPos] = divisionColorArray[k+1];
 
-
     }
-
-
 
   }
 
     ws281x.render(pixelData);
+
+    //return the scene information
+    return { scene : scene,  divisions : divisions, divisionType : divisionType};
 
 
 }

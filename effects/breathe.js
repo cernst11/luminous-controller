@@ -2,9 +2,6 @@
  * Breathe the current lights in color brightness
  */
 
-
-
-
 /**
  * Breath the current state of the light strip
  * @param startValue A dateobject to start the start of the wave
@@ -18,9 +15,14 @@ var breathe = function (startValue, ws281x) {
 
 }
 
+
 /**
- * Start the effect
- * @param ws281x The strip object to control
+ * anonymous function - Start the breate function
+ *
+ * @param  {Object} ws281x      The strip object
+ * @param  {Object} interval    The interval object
+ * @param  {Integer} refreshRate How quickly to breathe in milliseconds
+ * @return {Object}             The iniedrval object
  */
 var  startBreathe = function (ws281x, interval, refreshRate) {
 
@@ -35,4 +37,4 @@ var  startBreathe = function (ws281x, interval, refreshRate) {
     return interval;
 }
 
-module.exports.breathe = startBreathe;
+module.exports.startBreathe = startBreathe;

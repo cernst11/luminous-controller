@@ -1,4 +1,6 @@
-
+/**
+ *Have the lights chase like in a theater
+ */
 var color = require('./color');
 var black = 0x000000;
 
@@ -31,13 +33,13 @@ var  startTheaterChase = function(num_leds, pixelData, ws281x, colorValue, inter
     stepRate = (typeof stepRate  ==='undefined') ? 250 : stepRate;
     colorValue = (typeof  colorValue  === 'undefined') ? 0xFFFFFF : colorValue
 
-    color.color(num_leds, pixelData, ws281x, black);
+    color.setColor(num_leds, pixelData, ws281x, black);
     var lit  = 1;
     interval = setInterval(function () {
         theaterChase(pixelData, lit, ws281x, colorValue);
         if(lit == num_leds){
             lit = 0;
-            color.color(num_leds, pixelData, ws281x, black);
+            color.setColor(num_leds, pixelData, ws281x, black);
         }else {
             lit++;
         }
@@ -49,4 +51,4 @@ var  startTheaterChase = function(num_leds, pixelData, ws281x, colorValue, inter
 
 };
 
-module.exports.theaterChase = startTheaterChase;
+module.exports.startTheaterChase = startTheaterChase;
