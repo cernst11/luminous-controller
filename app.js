@@ -24,7 +24,7 @@ var basicScenes = require('./scenes/basicScenes');
 
 //include routes
 var routes = require('./routes/index');
-var users = require('./routes/users');
+//var users = require('./routes/users');
 
 var app = express();
 
@@ -39,11 +39,9 @@ var interval;
 var stripState ={
     state: 'stopped',
     power: false,
+    brightness: 255
 };
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -55,7 +53,7 @@ app.use(function (req, res, next) {
 });
 
 //set up and intialize the pixels
-var NUM_LEDS = parseInt(process.argv[2], 200) || 200,
+var NUM_LEDS = parseInt(process.argv[2], 220) || 220,
     pixelData = new Uint32Array(NUM_LEDS);
 
 ws281x.init(NUM_LEDS);
@@ -74,62 +72,54 @@ router.post('/effects', function (req, res) {
 
     clearInterval(interval);
     console.log(req.body);
-    stripState.mode = 'effects';
-    stripState.effect = req.body.effect;
-    stripState.state = 'started';
-    stripState.power = true;
-    delete stripState.scene;
+
 
     switch (req.body.effect) {
         case 'breathe':
-            interval = breathe.startBreathe(ws281x, interval, req.body.refresh);
+            interval = breathe.startBreathe(ws281x, interval, req.body.refresh, stripState);
             console.log(interval);
             break;
         case 'rainbow' :
-            interval = rainbow.startRainbow( NUM_LEDS, pixelData,  ws281x, interval, req.body.refresh);
+            interval = rainbow.startRainbow( NUM_LEDS, pixelData,  ws281x, interval, req.body.refresh, stripState);
             break;
         case 'theaterChase' :
-            interval = theaterChase.startTheaterChase( NUM_LEDS, pixelData,  ws281x, req.body.color , interval, req.body.refresh);
+            interval = theaterChase.startTheaterChase( NUM_LEDS, pixelData,  ws281x, req.body.color , interval, req.body.refresh, stripState);
             break;
         case 'rotate' :
-            interval = rotate.startRotate( NUM_LEDS, pixelData,  ws281x, interval, req.body.refresh,  req.body.color, req.body.lit);
+            interval = rotate.startRotate( NUM_LEDS, pixelData,  ws281x, interval, req.body.refresh,  req.body.color, req.body.lit, stripState);
             break;
         case 'rawColor' :
-            rawColor.raw( NUM_LEDS, pixelData,  ws281x, req.body.colorString);
+            rawColor.raw( NUM_LEDS, pixelData,  ws281x, req.body.colorString, stripState);
             break;
 
     }
     res.json({stripState : stripState, pixelData: pixelData });
-});
 
-router.post('/scene', function (req, res){
+}).post('/scene', function (req, res){
     clearInterval(interval);
-    stripState.mode = 'scene'
-    stripState.power = true;
-    delete stripState.effect;
-    var sceneInformation = basicScenes.basicScence(NUM_LEDS, pixelData,  ws281x, req.body.scene, req.body.divisions, req.body.divisionType);
-    console.log(sceneInformation);
-    stripState.scene = sceneInformation;
+    console.log('Hello World');
+    basicScenes.basicScence(NUM_LEDS, pixelData,  ws281x, req.body.scene, req.body.divisions, req.body.divisionType, stripState);
     res.json({ stripState : stripState, pixelData: pixelData})
 
 });
 
 router.post('/color', function (req, res) {
     clearInterval(interval);
-    stripState.mode = 'color';
-    stripState.state = 'started';
-    stripState.power = true;
-
-    delete stripState.scene;
-    color.setColor(NUM_LEDS, pixelData, ws281x, req.body.color );
+    interval = color.setColor(NUM_LEDS, pixelData, ws281x, req.body.color, stripState );
     res.json({stripState : stripState, color: pixelData});
-
 });
 
 router.post('/brightness', function (req, res) {
     var brightnessValue = ((req.body.brightness / 100) * 255);
     ws281x.setBrightness(Math.floor(brightnessValue));
     res.json({effect: req.body.mode, power_state : stripState.power, color: pixelData})
+});
+
+router.post('/on', function (req, res) {
+  clearInterval(interval);
+  color.setColor(NUM_LEDS, pixelData, ws281x, req.body.color, stripState, true );
+  res.json({stripState : stripState, color: pixelData});
+
 });
 
 //stop the the running function
@@ -143,8 +133,15 @@ router.get('/stop', function (req, res) {
     delete stripState.effect;
     delete stripState.selectedScene;
     clearInterval(interval);
-    var black = 0x000000;
-    color.setColor(NUM_LEDS, pixelData, ws281x, black);
+
+    interval = setInterval(function () {
+        ws281x.setBrightness(stripState.brightness);
+        ws281x.render(pixelData);
+        stripState.brightness--;
+        if(stripState.brightness<=0){
+          clearInterval(interval);
+        }
+    }, (60/255));
     res.json({stripState: stripState});
 
     //get the current state information for the light
@@ -155,7 +152,7 @@ router.get('/stop', function (req, res) {
 
 io.on('connection', function (socket) {
 
-    socket.emit('color', {color: pixelData});
+    socket.emit('state', { stripState: stripState, pixelData : pixelData});
 
     //modes are effects
     socket.on('mode', function (data) {
@@ -168,6 +165,7 @@ io.on('connection', function (socket) {
                 color.setColor(NUM_LEDS, pixelData, ws281x, colorValue);
                 break;
         console.log(data);
+        socket.emit('state', { stripState: stripState, pixelData : pixelData});
     }});
 
     /**
@@ -230,11 +228,11 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public/dist')));
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
 app.use('/mode', router);
 app.use('/', routes);
-app.use('/users', users);
+//app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -250,7 +248,7 @@ app.use(function (req, res, next) {
 if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
         res.status(err.status || 500);
-        res.render('error', {
+        res.json('error', {
             message: err.message,
             error: err
         });
@@ -261,13 +259,12 @@ if (app.get('env') === 'development') {
 // no stacktraces leaked to user
 app.use(function (err, req, res, next) {
     res.status(err.status || 500);
-    res.render('error', {
+    res.json('error', {
         message: err.message,
         error: {}
     });
 });
 
 //helper functions move to new file
-
 
 module.exports = {app: app, server: server};

@@ -16,12 +16,12 @@ var colorHelper =  {
       var tinyColor = require("tinycolor2");
 
       //convert the integer to a value timy color can use
-      startHex = startHex.toString(16).replace("0x", "");
-      endHex = endHex.toString(16).replace("0x", "");
+      console.log(startHex);
 
-      //pad the hex values
-      startHex = colorHelper.padHex(startHex);
-      endHex = colorHelper.padHex(endHex);
+
+      startHex = ('00000' + (startHex | 0).toString(16)).substr(-6);
+      endHex = ('00000' + (endHex | 0).toString(16)).substr(-6);
+
 
 
       var color1 = tinyColor(startHex);
@@ -55,7 +55,7 @@ var colorHelper =  {
 
 
    /**
-    * rgb2Int - Convert rgb value to integer
+    * rgb2Int - Convert rgb value to hex integer
     *
     * @param  {Integer} r Red integer value
     * @param  {Integer} g Green integer value
@@ -68,16 +68,13 @@ var colorHelper =  {
 
 
   /**
-   * anonymous function - Pad the hex string
+   * anonymous function - Convert hex Int to hex String
    *
    * @param  {String} hexValue The current HEX value
    * @return {String}          The padded string HEX value
    */
-  padHex : function (hexValue){
-    while(hexValue.length< 6){
-      hexValue = '0' +  hexValue ;
-    }
-    return hexValue;
+  hexToHexString : function (hexValue){
+    return ('00000' + (hexValue | 0).toString(16)).substr(-6);
   }
 
 };

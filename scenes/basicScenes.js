@@ -24,14 +24,12 @@ Array.prototype.randomElement = function () {
  * @param  {Integer} divisions    The number of divisions
  * @param  {String} divisionType  How to go from one divison to the next(Fade or Fixed) \
  */
-var showScene = function (num_leds, pixelData, ws281x, scene,  divisions, divisionType){
+var showScene = function (num_leds, pixelData, ws281x, scene,  divisions, divisionType, stripState){
 
      divisionType = (typeof divisionType  ==='undefined') ? (fixed) : divisionType;
     //color.color(num_leds, pixelData, ws281x, black);
 
     var colorHelper = require('../helpers/colorHelper').colorHelper;
-
-
     var divisionColor;
 
     var pixelsInDivision = Math.floor(num_leds/divisions);
@@ -66,7 +64,7 @@ if(divisionType === 'fixed'  ){
         divisionColorArray.push(divisionColor);
     }
 
-    //loop th rough each divisons and calculate the intermediate values between the colors using hsl transform
+    //loop through each divisons and calculate the intermediate values between the colors using hsl transform
     for(k = 0; k<=divisions-1 ; k++){
 
       var newArr = colorHelper.fadeColor(divisionColorArray[k], divisionColorArray[k+1],(pixelsInDivision -1));
@@ -85,18 +83,21 @@ if(divisionType === 'fixed'  ){
 
           pixelPos++;
       }
-
       //make sure to show the last color in the pixel division
       pixelData[pixelPos] = divisionColorArray[k+1];
-
     }
 
   }
 
-    ws281x.render(pixelData);
+  ws281x.render(pixelData);
 
-    //return the scene information
-    return { scene : scene,  divisions : divisions, divisionType : divisionType};
+  //set the states
+  stripState.mode = 'scene';
+  stripState.power = true;
+  delete stripState.effect;
+  stripState.scene = scene;
+  //return the scene information
+
 
 
 }

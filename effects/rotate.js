@@ -41,13 +41,13 @@ var rotate =  function (pixelData, ws281x, colorValue){
  * @param {Integer} litLeds - The number of lights to light to lightup
  * @returns {Object} - The interval object
  */
-var startRotate = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRate, colorValue, litLeds){
+var startRotate = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRate, colorValue, litLeds, stripState){
 
     //set the default values
     refreshRate = (typeof refreshRate  ==='undefined') ? (1000/1) : refreshRate;
     colorValue = (typeof  colorValue  === 'undefined') ? 0xFFFFFF : colorValue;
     litLeds = (typeof  litLeds  === 'undefined') ? 4 : litLeds;
-    color.setColor(NUM_LEDS, pixelData, ws281x, black);
+    color.setColor(NUM_LEDS, pixelData, ws281x, black, stripState);
 
     //set the default
     for(i=0; i<=litLeds -1; i++){
@@ -58,6 +58,13 @@ var startRotate = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRate
         rotate(pixelData, ws281x, colorValue);
     }, refreshRate )
 
+
+    //set the strip properties
+    stripState.mode = 'effects';
+    stripState.effect = 'rotate';
+    stripState.state = 'started';
+    stripState.power = true;
+    delete stripState.scene;
 
     return interval;
 }

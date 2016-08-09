@@ -19,12 +19,12 @@ var breathe = function (startValue, ws281x) {
 /**
  * anonymous function - Start the breate function
  *
- * @param  {Object} ws281x      The strip object
- * @param  {Object} interval    The interval object
- * @param  {Integer} refreshRate How quickly to breathe in milliseconds
- * @return {Object}             The iniedrval object
+ * @param  {Object} ws281x  -       The strip object
+ * @param  {Object} interval  -     The interval object
+ * @param  {Integer} refreshRate -  How quickly to breathe in milliseconds
+ * @return {Object}                 The interval object
  */
-var  startBreathe = function (ws281x, interval, refreshRate) {
+var  startBreathe = function (ws281x, interval, refreshRate, stripState) {
 
     refreshRate = (typeof refreshRate  ==='undefined') ? (1000/30) : refreshRate;
 
@@ -33,6 +33,13 @@ var  startBreathe = function (ws281x, interval, refreshRate) {
     interval = setInterval(function () {
         breathe(startValue, ws281x);
     }, refreshRate);
+
+    //set the strip properties
+    stripState.mode = 'effects';
+    stripState.effect = 'breathe';
+    stripState.state = 'started';
+    stripState.power = true;
+    delete stripState.scene;
 
     return interval;
 }

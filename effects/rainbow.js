@@ -53,7 +53,7 @@ var rainbow =  function (num_leds, pixelData, offset, ws281x) {
  * @returns {object} - The interval referance
  */
 
-var startRainbow = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRate){
+var startRainbow = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRate, stripState){
 
     //set default refresh rate if none is passed
     refreshRate = (typeof refreshRate  ==='undefined') ? (1000/30) : refreshRate;
@@ -63,6 +63,13 @@ var startRainbow = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRat
         offSet  = rainbow(NUM_LEDS, pixelData, offSet, ws281x);
 
     }, refreshRate);
+
+    //set the strip properties
+    stripState.mode = 'effects';
+    stripState.effect = 'rainbow';
+    stripState.state = 'started';
+    stripState.power = true;
+    delete stripState.scene;
 
     return interval;
 }

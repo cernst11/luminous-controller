@@ -28,23 +28,30 @@ var theaterChase = function (pixelData, lit, ws281x, colorValue){
  * @param {integer} stepRate - The rate at which the animation goes in milliseconds
  * @returns {object} The interval object
  */
-var  startTheaterChase = function(num_leds, pixelData, ws281x, colorValue, interval, stepRate){
+var  startTheaterChase = function(num_leds, pixelData, ws281x, colorValue, interval, stepRate, stripState){
 
     stepRate = (typeof stepRate  ==='undefined') ? 250 : stepRate;
     colorValue = (typeof  colorValue  === 'undefined') ? 0xFFFFFF : colorValue
 
-    color.setColor(num_leds, pixelData, ws281x, black);
+    color.setColor(num_leds, pixelData, ws281x, black, stripState);
     var lit  = 1;
     interval = setInterval(function () {
         theaterChase(pixelData, lit, ws281x, colorValue);
         if(lit == num_leds){
             lit = 0;
-            color.setColor(num_leds, pixelData, ws281x, black);
+            color.setColor(num_leds, pixelData, ws281x, black, stripState);
         }else {
             lit++;
         }
 
     }, stepRate);
+
+    //set the strip properties
+    stripState.mode = 'effects';
+    stripState.effect = 'theaterChase';
+    stripState.state = 'started';
+    stripState.power = true;
+    delete stripState.scene;
 
     return interval;
 
