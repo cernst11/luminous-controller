@@ -97,7 +97,6 @@ router.post('/effects', function (req, res) {
 
 }).post('/scene', function (req, res){
     clearInterval(interval);
-    console.log('Hello World');
     basicScenes.basicScence(NUM_LEDS, pixelData,  ws281x, req.body.scene, req.body.divisions, req.body.divisionType, stripState);
     res.json({ stripState : stripState, pixelData: pixelData})
 
@@ -162,7 +161,7 @@ io.on('connection', function (socket) {
                 power = true;
                 clearInterval(interval);
                 var colorValue = data.color;
-                color.setColor(NUM_LEDS, pixelData, ws281x, colorValue);
+                color.setColor(NUM_LEDS, pixelData, ws281x, colorValue, stripState);
                 break;
         console.log(data);
         socket.emit('state', { stripState: stripState, pixelData : pixelData});
@@ -196,7 +195,7 @@ io.on('connection', function (socket) {
                     var colorValue = 0x000000;
                     //save the last state
                     clearInterval(interval);
-                    color.setColor(NUM_LEDS, pixelData, ws281x, colorValue)
+                    color.setColor(NUM_LEDS, pixelData, ws281x, colorValue, stripState)
                     stripState.power = false;
 
                     break;
