@@ -24,9 +24,9 @@ function colorwheel(pos) {
 
 /**
  * The effect for rainbow mode
- * @param {integer} num_leds - The number of leds to use
- * @param {object} pixelData - The pixelData object to use
- * @param {integer} offset - The offset to use outside of the setInterval function
+ * @param {number} num_leds - The number of leds to use
+ * @param {uint32array} pixelData - The pixelData object to use
+ * @param {number} offset - The offset to use outside of the setInterval function
  * @param {object} ws281x - The strip object to control
 
  */
@@ -45,11 +45,11 @@ var rainbow =  function (num_leds, pixelData, offset, ws281x) {
 
 /**
  * Start the rainbow effect
- * @param {integer} NUM_LEDS - The number of leds
+ * @param {number} NUM_LEDS - The number of leds
  * @param {object} pixelData - The pixel data
  * @param {object} ws281x - The strip object
  * @param {object} interval - The interval object
- * @param {integer} refreshRate - The upodate rate for the effect
+ * @param {number} refreshRate - The upodate rate for the effect
  * @returns {object} - The interval referance
  */
 
@@ -65,12 +65,10 @@ var startRainbow = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRat
     }, refreshRate);
 
     //set the strip properties
-    stripState.mode = 'effects';
-    stripState.effect = 'rainbow';
-    stripState.state = 'started';
+    stripState.mode.selectedMode = 'effects';
+    stripState.mode.modeType = 'rainbow';
+    stripState.mode.activeState = 'started';
     stripState.power = true;
-    delete stripState.scene;
-
     return interval;
 }
 

@@ -6,9 +6,9 @@ var colorHelper =  {
   /**
    * fadeColor - Calculate the color intermediate colors between to hex values using hsl transform
    *
-   * @param  {Integer} startHex The starting hex value
-   * @param  {Integer} endHex   The ending hex value
-   * @param  {Integer} steps    The number of steps btween the two points
+   * @param  {number} startHex The starting hex value
+   * @param  {number} endHex   The ending hex value
+   * @param  {number} steps    The number of steps btween the two points
    * @return {Array}            Array of new values
    */
   fadeColor : function(startHex, endHex, steps){
@@ -57,10 +57,10 @@ var colorHelper =  {
    /**
     * rgb2Int - Convert rgb value to hex integer
     *
-    * @param  {Integer} r Red integer value
-    * @param  {Integer} g Green integer value
-    * @param  {Integer} b Blue integer value
-    * @return {Integer}   The integer(HEX) value of the RGB value
+    * @param  {number} r Red integer value
+    * @param  {number} g Green integer value
+    * @param  {number} b Blue integer value
+    * @return {number}   The integer(HEX) value of the RGB value
     */
    rgb2Int : function(r, g, b) {
       return ((r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff);
@@ -70,8 +70,8 @@ var colorHelper =  {
   /**
    * anonymous function - Convert hex Int to hex String
    *
-   * @param  {String} hexValue The current HEX value
-   * @return {String}          The padded string HEX value
+   * @param  {string} hexValue The current HEX value
+   * @return {string}          The padded string HEX value
    */
   hexToHexString : function (hexValue){
     return ('00000' + (hexValue | 0).toString(16)).substr(-6);

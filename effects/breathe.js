@@ -4,8 +4,8 @@
 
 /**
  * Breath the current state of the light strip
- * @param startValue A dateobject to start the start of the wave
- * @param ws281x The strip object to control
+ * @param {object | date} startValue - A dateobject to start the start of the wave
+ * @param {object} ws281x - The strip object to control
  */
 var breathe = function (startValue, ws281x) {
 
@@ -19,10 +19,10 @@ var breathe = function (startValue, ws281x) {
 /**
  * anonymous function - Start the breate function
  *
- * @param  {Object} ws281x  -       The strip object
- * @param  {Object} interval  -     The interval object
- * @param  {Integer} refreshRate -  How quickly to breathe in milliseconds
- * @return {Object}                 The interval object
+ * @param  {object} ws281x  -       The strip object
+ * @param  {object} interval  -     The interval object
+ * @param  {number} refreshRate -  How quickly to breathe in milliseconds
+ * @returns {object}                 The interval object
  */
 var  startBreathe = function (ws281x, interval, refreshRate, stripState) {
 
@@ -35,11 +35,10 @@ var  startBreathe = function (ws281x, interval, refreshRate, stripState) {
     }, refreshRate);
 
     //set the strip properties
-    stripState.mode = 'effects';
-    stripState.effect = 'breathe';
-    stripState.state = 'started';
+    stripState.mode.selectedMode = 'effects';
+    stripState.mode.modeType = 'breathe';
+    stripState.mode.activeState = 'started';
     stripState.power = true;
-    delete stripState.scene;
 
     return interval;
 }

@@ -5,7 +5,7 @@ var color = require('./color');
 
 
 
-function renderBlob = function(pixelData, ws281x){
+function renderBlob (pixelData, ws281x){
 
 
 

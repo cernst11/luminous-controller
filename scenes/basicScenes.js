@@ -17,12 +17,12 @@ Array.prototype.randomElement = function () {
 /**
  * anonymous function - Show  a scene
  *
- * @param  {integer} num_leds     The number of leds
- * @param  {Object} pixelData     The pixel colors
- * @param  {Object} ws281x        The strip object
- * @param  {String} scene         The scene to show
- * @param  {Integer} divisions    The number of divisions
- * @param  {String} divisionType  How to go from one divison to the next(Fade or Fixed) \
+ * @param  {number} num_leds   -  The number of leds
+ * @param  {object} pixelData  -  The pixel colors
+ * @param  {object} ws281x     -   The strip object
+ * @param  {string} scene      -   The scene to show
+ * @param  {number} divisions  -  The number of divisions
+ * @param  {string} divisionType - How to go from one divison to the next(Fade or Fixed)
  */
 var showScene = function (num_leds, pixelData, ws281x, scene,  divisions, divisionType, stripState){
 
@@ -92,10 +92,10 @@ if(divisionType === 'fixed'  ){
   ws281x.render(pixelData);
 
   //set the states
-  stripState.mode = 'scene';
+  stripState.mode.selectedMode = 'scene';
+  stripState.mode.modeType = 'basicScence';
+  stripState.mode.activeState = 'started';
   stripState.power = true;
-  delete stripState.effect;
-  stripState.scene = scene;
   //return the scene information
 
 

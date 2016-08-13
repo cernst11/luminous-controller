@@ -7,12 +7,12 @@ var black = 0x000000;
 
 /**
  * Display the lights
- * @param {Object} pixelData - The strip pixel data
- * @param {Integer} lit - The iteration in the loop
- * @param {Object} ws281x - The strip object
- * @param {Integer} colorValue - The hex color value to set
+ * @param {uint32array} pixelData - The strip pixel data
+ * @param {number} lit - The iteration in the loop
+ * @param {object} ws281x - The strip object
+ * @param {number} colorValue - The hex color value to set
  */
-var rotate =  function (pixelData, ws281x, colorValue){
+var rotate =  function (pixelData, ws281x){
     //Copy the type array to a genric array so that we can push and unshifted
     var tempArray =[];
     for(i=0; i<pixelData.length; i++){
@@ -32,14 +32,14 @@ var rotate =  function (pixelData, ws281x, colorValue){
 
 /**
  * Start the rainbow effect
- * @param {Integer} NUM_LEDS - The number of leds
- * @param {Object} pixelData - The pixel data
- * @param {Object} ws281x - The strip object
- * @param {Object} interval - The interval object
- * @param {Integer} refreshRate - The upodate rate for the effect
- * @param {Integer} colorValue - The hex color value to set
- * @param {Integer} litLeds - The number of lights to light to lightup
- * @returns {Object} - The interval object
+ * @param {number} NUM_LEDS - The number of leds
+ * @param {uint32array} pixelData - The pixel data
+ * @param {object} ws281x - The strip object
+ * @param {object} interval - The interval object
+ * @param {number} refreshRate - The upodate rate for the effect
+ * @param {number} colorValue - The hex color value to set
+ * @param {number} litLeds - The number of lights to light to lightup
+ * @returns {object} - The interval object
  */
 var startRotate = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRate, colorValue, litLeds, stripState){
 
@@ -47,6 +47,7 @@ var startRotate = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRate
     refreshRate = (typeof refreshRate  ==='undefined') ? (1000/1) : refreshRate;
     colorValue = (typeof  colorValue  === 'undefined') ? 0xFFFFFF : colorValue;
     litLeds = (typeof  litLeds  === 'undefined') ? 4 : litLeds;
+
     color.setColor(NUM_LEDS, pixelData, ws281x, black, stripState);
 
     //set the default
@@ -55,16 +56,15 @@ var startRotate = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRate
     }
 
     interval = setInterval(function () {
-        rotate(pixelData, ws281x, colorValue);
+        rotate(pixelData, ws281x);
     }, refreshRate )
 
 
     //set the strip properties
-    stripState.mode = 'effects';
-    stripState.effect = 'rotate';
-    stripState.state = 'started';
+    stripState.mode.selectedMode = 'effects';
+    stripState.mode.modeType = 'rotate';
+    stripState.mode.activeState = 'started';
     stripState.power = true;
-    delete stripState.scene;
 
     return interval;
 }

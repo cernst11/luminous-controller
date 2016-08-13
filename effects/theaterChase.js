@@ -6,10 +6,10 @@ var black = 0x000000;
 
 /**
  * Display the lights
- * @param {object} pixelData - The strip pixel data
- * @param {integer} lit - The iteration in the loop
+ * @param {uint32array} pixelData - The strip pixel data
+ * @param {number} lit - The iteration in the loop
  * @param {object} ws281x - The strip object
- * @param {integer} colorValue - The hex color value to set
+ * @param {number} colorValue - The hex color value to set
  */
 var theaterChase = function (pixelData, lit, ws281x, colorValue){
     //set the pixel in the strip
@@ -20,12 +20,12 @@ var theaterChase = function (pixelData, lit, ws281x, colorValue){
 
 /**
  * Chase lights like in a theater
- * @param {integer} num_leds - The number of leds
- * @param {object} pixelData - The pixel data
+ * @param {number} num_leds - The number of leds
+ * @param {uint32array} pixelData - The pixel data
  * @param {object} ws281x - The strip object
- * @param {integer} colorValue - The hex color value to use
- * @param {integer} interval - The interval object
- * @param {integer} stepRate - The rate at which the animation goes in milliseconds
+ * @param {number} colorValue - The hex color value to use
+ * @param {object} interval - The interval object
+ * @param {number} stepRate - The rate at which the animation goes in milliseconds
  * @returns {object} The interval object
  */
 var  startTheaterChase = function(num_leds, pixelData, ws281x, colorValue, interval, stepRate, stripState){
@@ -47,12 +47,10 @@ var  startTheaterChase = function(num_leds, pixelData, ws281x, colorValue, inter
     }, stepRate);
 
     //set the strip properties
-    stripState.mode = 'effects';
-    stripState.effect = 'theaterChase';
-    stripState.state = 'started';
+    stripState.mode.selectedMode = 'effects';
+    stripState.mode.modeType = 'theaterChase';
+    stripState.mode.activeState = 'started';
     stripState.power = true;
-    delete stripState.scene;
-
     return interval;
 
 

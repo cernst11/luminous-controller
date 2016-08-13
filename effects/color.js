@@ -6,43 +6,41 @@
 /**
  * var - description  - Set the strip to a single color
  *
- * @param  {Integer} num_pixels The number of pixels
- * @param  {Object} pixelData  The pixel data
- * @param  {Object} ws281x     THe strip Object
- * @param  {Integer} color      The hex integer color
- * @param  {boolean} fadeIn      Fade in to the color
+ * @param  {number} num_pixels - The number of pixels
+ * @param  {uint32array} pixelData  - The pixel data
+ * @param  {object} ws281x     - THe strip Object
+ * @param  {number} color      - The hex integer color
+ * @param  {boolean} fadeIn     - Fade in to the color
  */
-var color = function(num_pixels, pixelData, ws281x, color, stripState, fadeIn){
+var color = function(num_pixels, pixelData, ws281x, color, stripState, fadeIn) {
 
-stripState.mode = 'on';
-stripState.state = 'started';
-stripState.power = true;
-delete stripState.scene;
-delete stripState.effect;
+  fadeIn = (typeof fadeIn === 'undefined') ? false : fadeIn;
 
-console.log(stripState);
-fadeIn = (typeof fadeIn  ==='undefined') ? false : fadeIn;
-
-for(var i = 0; i < num_pixels; i++) {
+  for (var i = 0; i < num_pixels; i++) {
     pixelData[i] = color;
-}
+  }
 
-if(!fadeIn){
+  if (!fadeIn) {
     ws281x.render(pixelData);
-  }else{
+  } else {
     stripState.brightness = 0
-    interval = setInterval(function () {
-        ws281x.setBrightness(stripState.brightness);
-        ws281x.render(pixelData);
-        stripState.brightness++;
-        if(stripState.brightness>=255){
-          clearInterval(interval);
-        }
-    }, (60/255));
+    interval = setInterval(function() {
+      ws281x.setBrightness(stripState.brightness);
+      ws281x.render(pixelData);
+      stripState.brightness++;
+      if (stripState.brightness >= 255) {
+        clearInterval(interval);
+      }
+    }, (60 / 255));
 
     return interval;
 
   }
+
+  stripState.mode.selectedMode = 'color';
+  stripState.mode.modeType = 'color';
+  stripState.mode.activeState = 'started';
+  stripState.power = true;
 
 
 }
