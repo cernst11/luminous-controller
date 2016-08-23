@@ -10,7 +10,7 @@ var tinycolor = require("tinycolor2");
 var router = express.Router();
 
 //UDP IMPORT
-var UDP_PORT = 3001;
+var UDP_PORT = 6883;
 var HOST = '192.168.1.112';
 var dgram = require('dgram');
 var server_udp = dgram.createSocket('udp4');
@@ -25,6 +25,9 @@ var theaterChase = require('./effects/theaterChase');
 var rotate = require('./effects/rotate');
 var rawColor = require('./effects/raw');
 var color = require('./effects/color');
+var power = require('./effects/power');
+
+var colorHelper = require('./helpers/colorHelper').colorHelper;
 
 //scenes
 var basicScenes = require('./scenes/basicScenes');
@@ -40,12 +43,15 @@ var io = require('socket.io')(server);
 
 var interval;
 
-//Stip States
+
+
+//StripState
 var stripState = {
   power: false,
   brightness: 255,
   mode: {}
 };
+
 
 
 // uncomment after placing your favicon in /public
@@ -60,8 +66,9 @@ app.use(function(req, res, next) {
 server_udp.bind(UDP_PORT, HOST);
 
 //set up and intialize the pixels
-var NUM_LEDS = parseInt(process.argv[2], 220) || 220,
-  pixelData = new Uint32Array(NUM_LEDS);
+var NUM_LEDS = parseInt(process.argv[2], 220) || 220 ;
+var pixelData = new Uint32Array(NUM_LEDS);
+var previousStateArray =  new Uint32Array(NUM_LEDS);
 
 ws281x.init(NUM_LEDS);
 
@@ -76,17 +83,21 @@ process.on('SIGINT', function() {
 //UDP listener
 server_udp.on('listening', function() {
   var address = server.address();
-  console.log('UDP Server listening on ' + address.address + ":" + address.port);
 });
 
 server_udp.on('message', function(message, remote) {
   rawColor.raw(NUM_LEDS, pixelData, ws281x, message, stripState);
 });
 
+//Force the array to emppty on start
+color.setColor(NUM_LEDS, pixelData, ws281x, 0x000000);
+
 //rest controller
 router.post('/effects', function(req, res) {
 
   clearInterval(interval);
+  ws281x.setBrightness(255);
+  stripState.brightness = 255;
   switch (req.body.effect) {
     case 'breathe':
       interval = breathe.startBreathe(ws281x, interval, req.body.refresh, stripState);
@@ -99,16 +110,17 @@ router.post('/effects', function(req, res) {
       interval = theaterChase.startTheaterChase(NUM_LEDS, pixelData, ws281x, req.body.color, interval, req.body.refresh, stripState);
       break;
     case 'rotate':
-      interval = rotate.startRotate(NUM_LEDS, pixelData, ws281x, interval, req.body.refresh, req.body.color, req.body.lit, stripState);
+      interval = rotate.startRotate(NUM_LEDS, pixelData, ws281x, interval, req.body.refresh, req.body.color, req.body.fillColor,  req.body.lit, stripState);
       break;
     case 'rawColor':
       rawColor.raw(NUM_LEDS, pixelData, ws281x, req.body.colorString, stripState);
       break;
 
   }
+  var colorArray = colorHelper.arrayToHexString(pixelData);
   res.json({
     stripState: stripState,
-    pixelData: pixelData
+    pixelData: colorArray
   });
 
 }).post('/scene', function(req, res) {
@@ -131,18 +143,27 @@ router.post('/effects', function(req, res) {
   var brightnessValue = ((req.body.brightness / 100) * 255);
   ws281x.setBrightness(Math.floor(brightnessValue));
   stripState.brightness = brightnessValue;
+  //colorHelper.setHslBrightness(NUM_LEDS, ws281x, pixelData, req.body.brightness );
   res.json({
     stripState: stripState
   });
+
 }).post('/on', function(req, res) {
   clearInterval(interval);
-  color.setColor(NUM_LEDS, pixelData, ws281x, req.body.color, stripState, true);
+  power.setPower(NUM_LEDS, pixelData, ws281x, interval, 0xFFFFFF, 'on', stripState, previousStateArray);
   res.json({
     stripState: stripState,
     color: pixelData
   });
-
-});
+}).post('/off', function(req, res) {
+    clearInterval(interval);
+    previousStateArray = power.setPower(NUM_LEDS, pixelData, ws281x, interval, 0xFFFFFF, 'off', stripState);
+    res.json({
+      stripState: stripState,
+      color: pixelData,
+      previousState : previousStateArray
+    });
+  });
 
 //stop the the running function
 router.get('/stop', function(req, res) {
@@ -155,32 +176,33 @@ router.get('/stop', function(req, res) {
 
   //turn the lights off
 }).get('/off', function(req, res) {
-  stripState.mode.selectedMode = 'off';
-  stripState.mode.modeType = 'off';
-  stripState.mode.activeState = 'stopped';
-  stripState.power = false;
-
   clearInterval(interval);
-
-  interval = setInterval(function() {
-    ws281x.setBrightness(stripState.brightness);
-    ws281x.render(pixelData);
-    stripState.brightness--;
-    if (stripState.brightness <= 0) {
-      clearInterval(interval);
-    }
-  }, (60 / 255));
+  previousStateArray = power.setPower(NUM_LEDS, pixelData, ws281x, interval, 0xFFFFFF, 'off', stripState);
+  res.json({
+    stripState: stripState,
+    color: pixelData,
+    previousState : previousStateArray
+  });
   res.json({
     stripState: stripState
   });
 
   //get the current state information for the light
 }).get('/state', function(req, res) {
+  var colorArray = colorHelper.arrayToHexString(pixelData);
   res.json({
     stripState: stripState,
-    pixel_color: pixelData
+    pixel_color: colorArray
+  });
+}).get('/on', function(req, res) {
+  clearInterval(interval);
+  power.setPower(NUM_LEDS, pixelData, ws281x, interval, 0xFFFFFF, 'on', stripState, previousStateArray);
+  res.json({
+    stripState: stripState,
+    color: pixelData
   });
 });
+
 
 io.on('connection', function(socket) {
 
@@ -237,10 +259,8 @@ io.on('connection', function(socket) {
           clearInterval(interval);
           color.setColor(NUM_LEDS, pixelData, ws281x, colorValue, stripState)
           stripState.power = false;
-
           break;
         } else {
-
           ws281x.render(pixelData);
         }
     }

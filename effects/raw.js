@@ -12,25 +12,13 @@
  */
 var rawColor= function(num_leds, pixelData, ws281x, colorString, stripState){
 
-    //var color = require('./color');
-    //var black = 0x000000;
+  var newColor = colorString.toString('hex');
+  colorArray = newColor.match(/.{1,6}/g);
 
-  //  color.setColor(num_leds, pixelData, ws281x, black, stripState);
-
-    var newColor = colorString.toString('hex');
-    colorArray = newColor.match(/.{1,6}/g);
-
-    for(i=0; i<num_leds; i++){
-      //console.log(colorArray[i]);
-        pixelData[i] = '0x' + colorArray[i];
-    }
-
-    //set the strip properties
-    /*stripState.mode = 'effects';
-    stripState.effect = 'raw';
-    stripState.state = 'started';
-    stripState.power = true;
-    delete stripState.scene;*/
+  for(i=0; i<num_leds; i++){
+    //console.log(colorArray[i]);
+      pixelData[i] = '0x' + colorArray[i];
+  }
 
     ws281x.render(pixelData);
 

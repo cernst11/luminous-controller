@@ -41,18 +41,22 @@ var rotate =  function (pixelData, ws281x){
  * @param {number} litLeds - The number of lights to light to lightup
  * @returns {object} - The interval object
  */
-var startRotate = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRate, colorValue, litLeds, stripState){
+var startRotate = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRate, colorValue, fillColorValue, litLeds, stripState){
 
     //set the default values
     refreshRate = (typeof refreshRate  ==='undefined') ? (1000/1) : refreshRate;
     colorValue = (typeof  colorValue  === 'undefined') ? 0xFFFFFF : colorValue;
     litLeds = (typeof  litLeds  === 'undefined') ? 4 : litLeds;
+    fillColorValue = (typeof  fillColorValue  === 'undefined') ? 0x000000 : fillColorValue;
 
     color.setColor(NUM_LEDS, pixelData, ws281x, black, stripState);
 
     //set the default
     for(i=0; i<=litLeds -1; i++){
         pixelData[i]=colorValue;
+    }
+    for(j=litLeds; j<=NUM_LEDS ; j++){
+        pixelData[j]=fillColorValue;
     }
 
     interval = setInterval(function () {
