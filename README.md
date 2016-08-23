@@ -1,7 +1,7 @@
 Luminous Controller
 ==================
 
-A REST and Websocket interface for controlling WS2812 LEDS connected to a Raspberry pi (Only has been tested on version 1 model B)
+A REST,  Websocket adn UDP interface for controlling WS2812 LEDS connected to a Raspberry pi (Only has been tested on version 1 model B)
 
 Installation
 ===
