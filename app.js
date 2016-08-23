@@ -183,9 +183,6 @@ router.get('/stop', function(req, res) {
     color: pixelData,
     previousState : previousStateArray
   });
-  res.json({
-    stripState: stripState
-  });
 
   //get the current state information for the light
 }).get('/state', function(req, res) {
