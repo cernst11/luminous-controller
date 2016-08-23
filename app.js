@@ -9,11 +9,7 @@ var tinycolor = require("tinycolor2");
 
 var router = express.Router();
 
-//UDP IMPORT
-var UDP_PORT = 6883;
-var HOST = '192.168.1.112';
-var dgram = require('dgram');
-var server_udp = dgram.createSocket('udp4');
+
 
 //light stuff
 var ws281x = require('rpi-ws281x-native');
@@ -40,6 +36,12 @@ var app = express();
 //include socket stuff
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+
+//UDP IMPORT
+var UDP_PORT = 6883;
+var HOST = server.address.address;
+var dgram = require('dgram');
+var server_udp = dgram.createSocket('udp4');
 
 var interval;
 
@@ -183,6 +185,7 @@ router.get('/stop', function(req, res) {
     color: pixelData,
     previousState : previousStateArray
   });
+
 
   //get the current state information for the light
 }).get('/state', function(req, res) {
