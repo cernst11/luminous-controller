@@ -65,9 +65,7 @@ var startRainbow = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRat
     }, refreshRate);
 
     //set the strip properties
-    stripState.mode.selectedMode = 'effects';
-    stripState.mode.modeType = 'rainbow';
-    stripState.mode.activeState = 'started';
+    stripState.setMode('effects', 'rainbow', 'started');
     stripState.power = true;
     return interval;
 }

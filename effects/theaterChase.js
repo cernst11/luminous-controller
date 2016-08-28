@@ -47,9 +47,7 @@ var  startTheaterChase = function(num_leds, pixelData, ws281x, colorValue, inter
     }, stepRate);
 
     //set the strip properties
-    stripState.mode.selectedMode = 'effects';
-    stripState.mode.modeType = 'theaterChase';
-    stripState.mode.activeState = 'started';
+    stripState.setMode('effects', 'theaterChase', 'started');
     stripState.power = true;
     return interval;
 

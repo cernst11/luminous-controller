@@ -65,9 +65,7 @@ var startRotate = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRate
 
 
     //set the strip properties
-    stripState.mode.selectedMode = 'effects';
-    stripState.mode.modeType = 'rotate';
-    stripState.mode.activeState = 'started';
+    stripState.setMode('effects', 'rotate', 'started');
     stripState.power = true;
 
     return interval;

@@ -21,10 +21,7 @@ var rawColor= function(num_leds, pixelData, ws281x, colorString, stripState){
   }
 
     ws281x.render(pixelData);
-
-    stripState.mode.selectedMode = 'raw';
-    stripState.mode.modeType = 'raw';
-    stripState.mode.activeState = 'started';
+    stripState.setMode('raw', 'raw', 'started');
     stripState.power = true;
 
 };

@@ -35,9 +35,7 @@ var  startBreathe = function (ws281x, interval, refreshRate, stripState) {
     }, refreshRate);
 
     //set the strip properties
-    stripState.mode.selectedMode = 'effects';
-    stripState.mode.modeType = 'breathe';
-    stripState.mode.activeState = 'started';
+    stripState.setMode('effects', 'breathe', 'started');
     stripState.power = true;
 
     return interval;

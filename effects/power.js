@@ -11,9 +11,7 @@ var color = require('./color');
 var fadePowerOn = function(interval, ws281x, stripState) {
 
   stripState.power = true;
-  stripState.mode.selectedMode = 'on';
-  stripState.mode.modeType = 'on';
-  stripState.mode.activeState = 'stopped';
+  stripState.setMode('on', 'on', 'stopped');
 
   interval = setInterval(function() {
     if (stripState.brightness >= 255) {
@@ -61,9 +59,7 @@ var setPower = function(num_pixels, pixelData, ws281x, interval, colorValue, toP
 
   } else if (toPowerMode === 'off' && stripState.power === true) {
 
-    stripState.mode.selectedMode = 'off';
-    stripState.mode.modeType = 'off';
-    stripState.mode.activeState = 'stopped';
+    stripState.setMode('off', 'off', 'stopped');
     stripState.power = false;
     var colorArray;
     colorArray = pixelData.slice(0);
@@ -71,7 +67,7 @@ var setPower = function(num_pixels, pixelData, ws281x, interval, colorValue, toP
       ws281x.render(pixelData);
       if (stripState.brightness <= 0) {
         colorArray = pixelData.slice(0);
-        stripState.brightness = 0;
+        stripState.setBrightness = 0;
         color.setColor(num_pixels, pixelData, ws281x, 0x000000);
         clearInterval(interval);
       }else {

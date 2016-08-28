@@ -21,9 +21,7 @@ var color = function(num_pixels, pixelData, ws281x, color, stripState) {
   ws281x.render(pixelData);
 
   if (typeof stripState !== 'undefined'  ) {
-    stripState.mode.selectedMode = 'color';
-    stripState.mode.modeType = 'color';
-    stripState.mode.activeState = 'started';
+    stripState.setMode('color', 'color', 'started');
     stripState.power = true;
   }
 

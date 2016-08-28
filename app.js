@@ -45,15 +45,9 @@ var server_udp = dgram.createSocket('udp4');
 
 var interval;
 
-
-
-//StripState
-var stripState = {
-  power: false,
-  brightness: 255,
-  mode: {}
-};
-
+let StripState = require('./helpers/stripState');
+let stripState = new StripState.StripState(false, 255, 'off' , 'off', 'stopped');
+console.log(stripState);
 
 
 // uncomment after placing your favicon in /public
@@ -68,7 +62,7 @@ app.use(function(req, res, next) {
 server_udp.bind(UDP_PORT, HOST);
 
 //set up and intialize the pixels
-var NUM_LEDS = parseInt(process.argv[2], 220) || 220 ;
+var NUM_LEDS = parseInt(process.argv[2], 60) || 60 ;
 var pixelData = new Uint32Array(NUM_LEDS);
 var previousStateArray =  new Uint32Array(NUM_LEDS);
 
@@ -92,14 +86,14 @@ server_udp.on('message', function(message, remote) {
 });
 
 //Force the array to emppty on start
-color.setColor(NUM_LEDS, pixelData, ws281x, 0x000000);
+color.setColor(NUM_LEDS, pixelData, ws281x, 0xFFFFFF, stripState);
 
 //rest controller
 router.post('/effects', function(req, res) {
 
   clearInterval(interval);
   ws281x.setBrightness(255);
-  stripState.brightness = 255;
+  stripState.setBrightness = 255;
   switch (req.body.effect) {
     case 'breathe':
       interval = breathe.startBreathe(ws281x, interval, req.body.refresh, stripState);
@@ -175,7 +169,6 @@ router.get('/stop', function(req, res) {
     stripState: stripState,
     color: pixelData
   });
-
   //turn the lights off
 }).get('/off', function(req, res) {
   clearInterval(interval);
@@ -185,8 +178,6 @@ router.get('/stop', function(req, res) {
     color: pixelData,
     previousState : previousStateArray
   });
-
-
   //get the current state information for the light
 }).get('/state', function(req, res) {
   var colorArray = colorHelper.arrayToHexString(pixelData);
