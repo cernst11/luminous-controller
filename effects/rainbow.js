@@ -53,11 +53,9 @@ var rainbow =  function (num_leds, pixelData, offset, ws281x) {
  * @returns {object} - The interval referance
  */
 
-var startRainbow = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRate, stripState){
+var startRainbow = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRate = (10000/30), stripState){
 
     //set default refresh rate if none is passed
-    refreshRate = (typeof refreshRate  ==='undefined') ? (1000/30) : refreshRate;
-
     var offSet= 0;
     interval = setInterval(function () {
         offSet  = rainbow(NUM_LEDS, pixelData, offSet, ws281x);

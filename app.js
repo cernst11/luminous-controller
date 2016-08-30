@@ -240,30 +240,25 @@ io.on('connection', function(socket) {
 
       case 'brightness':
         var brightnessValue = ((data.brightnessLevel / 100) * 255);
+        //stripState.setBrightness(brightnessValue);
         ws281x.setBrightness(Math.floor(brightnessValue));
         break;
       case 'power':
         //if power is true turn it off
         if (stripState.power) {
-          var colorValue = 0x000000;
-          //save the last state
-          clearInterval(interval);
-          color.setColor(NUM_LEDS, pixelData, ws281x, colorValue, stripState)
-          stripState.power = false;
-          break;
+          previousStateArray = power.setPower(NUM_LEDS, pixelData, ws281x, interval, 0x000000, 'off', stripState);
         } else {
-          ws281x.render(pixelData);
+          power.setPower(NUM_LEDS, pixelData, ws281x, interval, 0xFFFFFF, 'on', stripState, previousStateArray);
         }
+        break;
     }
   });
 
 
   socket.on('getStripProperties', function(data) {
 
-    socket.emit('stripProperties', {
-      color: pixelData,
-      state: stripState.state,
-      powerState: stripState.power
+    socket.emit('stripState', {
+      stripState: stripState,
     });
 
   });

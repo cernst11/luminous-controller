@@ -24,9 +24,7 @@ var breathe = function (startValue, ws281x) {
  * @param  {number} refreshRate -  How quickly to breathe in milliseconds
  * @returns {object}                 The interval object
  */
-var  startBreathe = function (ws281x, interval, refreshRate, stripState) {
-
-    refreshRate = (typeof refreshRate  ==='undefined') ? (1000/30) : refreshRate;
+var  startBreathe = function (ws281x, interval, refreshRate = (1000/30), stripState) {
 
     //clearInterval(interval);
     var startValue = Date.now();

@@ -41,9 +41,9 @@ var setPower = function(num_pixels, pixelData, ws281x, interval, colorValue, toP
   clearInterval(interval);
   //if coming from a a std off
   if (stripState.brightness <= 0 && toPowerMode === 'on') {
-    for (var i = 0; i < num_pixels; i++) {
-      pixelData[i] = previousColorArray[i];
-    }
+    //for (var i = 0; i < num_pixels; i++) {
+      pixelData = previousColorArray.slice(0);
+    //}
 
     ws281x.render(pixelData);
 
@@ -67,7 +67,7 @@ var setPower = function(num_pixels, pixelData, ws281x, interval, colorValue, toP
       ws281x.render(pixelData);
       if (stripState.brightness <= 0) {
         colorArray = pixelData.slice(0);
-        stripState.setBrightness = 0;
+        stripState.setBrightness(0);
         color.setColor(num_pixels, pixelData, ws281x, 0x000000);
         clearInterval(interval);
       }else {
@@ -78,8 +78,6 @@ var setPower = function(num_pixels, pixelData, ws281x, interval, colorValue, toP
     }, (60 / 255));
       //brightness 0 is not actually completley off so set to black and return the previous color array
     return colorArray;
-
-
   }
 
 }
