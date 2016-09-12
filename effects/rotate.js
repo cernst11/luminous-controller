@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Rotate a fixed number of leds arround the strip
  */
@@ -12,10 +13,10 @@ var black = 0x000000;
  * @param {object} ws281x - The strip object
  * @param {number} colorValue - The hex color value to set
  */
-var rotate =  function (pixelData, ws281x){
+var rotate =  function (pixelData, stripState){
     //Copy the type array to a genric array so that we can push and unshifted
     var tempArray =[];
-    for(i=0; i<pixelData.length; i++){
+    for(var i=0; i<pixelData.length; i++){
         tempArray[i] = pixelData[i];
     }
     //Get and remove the last value
@@ -27,36 +28,35 @@ var rotate =  function (pixelData, ws281x){
         pixelData[i] = tempArray[i];
     }
 
-    ws281x.render(pixelData);
+    stripState.render(pixelData);
 };
 
 /**
  * Start the rainbow effect
  * @param {number} NUM_LEDS - The number of leds
  * @param {uint32array} pixelData - The pixel data
- * @param {object} ws281x - The strip object
  * @param {object} interval - The interval object
  * @param {number} refreshRate - The upodate rate for the effect
  * @param {number} colorValue - The hex color value to set
  * @param {number} litLeds - The number of lights to light to lightup
  * @returns {object} - The interval object
  */
-var startRotate = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRate = (1000/10), colorValue = 0xFFFFFF, fillColorValue = 0x000000, litLeds = 10, stripState){
+var startRotate = function  ( pixelData, interval, stripState, refreshRate = (1000/10), colorValue = 0xFFFFFF, fillColorValue = 0x000000, litLeds = 10 ){
 
     //set Color to 0
-    color.setColor(NUM_LEDS, pixelData, ws281x, black, stripState);
+    color.setColor( pixelData, black, stripState);
 
     //set the default
-    for(i=0; i<=litLeds -1; i++){
+    for(var i=0; i<=litLeds -1; i++){
         pixelData[i]=colorValue;
     }
-    for(j=litLeds; j<=NUM_LEDS ; j++){
+    for(var j=litLeds; j<=stripState.numLEDS ; j++){
         pixelData[j]=fillColorValue;
     }
 
     interval = setInterval(function () {
-        rotate(pixelData, ws281x);
-    }, refreshRate )
+        rotate(pixelData, stripState);
+    }, refreshRate );
 
 
     //set the strip properties
@@ -64,6 +64,6 @@ var startRotate = function  (NUM_LEDS, pixelData,  ws281x, interval, refreshRate
     stripState.power = true;
 
     return interval;
-}
+};
 
 module.exports.startRotate = startRotate;

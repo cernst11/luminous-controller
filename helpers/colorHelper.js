@@ -1,9 +1,10 @@
+'use strict';
 /**
  * Helper class for colors
  */
 var colorHelper = {
 
-  tinyColor: require("tinycolor2"),
+  tinyColor: require('tinycolor2'),
 
   /**
    * fadeColor - Calculate the color intermediate colors between to hex values using hsl transform
@@ -28,10 +29,10 @@ var colorHelper = {
     var satStepValue = (endHsl.s - startHsl.s) / steps;
     var lumStepValue = (endHsl.l - startHsl.l) / steps;
     var hexStepArray = [];
-    var x = [hueStepValue, satStepValue, lumStepValue];
+    //var x = [hueStepValue, satStepValue, lumStepValue];
 
     //increment hsl value and covert back to hex
-    for (i = 1; i <= steps; i++) {
+    for (var i = 1; i <= steps; i++) {
 
       var h = startHsl.h + (hueStepValue * i);
       var s = startHsl.s + (satStepValue * i);
@@ -63,7 +64,7 @@ var colorHelper = {
  */
 setHslBrightness: function(num_pixels, ws281x, pixelData, brightnessPercent) {
 
-    for (i = 0; i < num_pixels; i++) {
+    for (var i = 0; i < num_pixels; i++) {
       var color = this.hexToHexString(pixelData[i]);
       console.log(pixelData[i]);
       color = this.tinyColor(color);
@@ -113,7 +114,7 @@ setHslBrightness: function(num_pixels, ws281x, pixelData, brightnessPercent) {
 
     var hexColorArray = {};
 
-    for( pixel = 0; pixel < pixelData.length; pixel++){
+    for( var pixel = 0; pixel < pixelData.length; pixel++){
       hexColorArray[pixel] =  this.hexToHexString(pixelData[pixel]);
     }
 
