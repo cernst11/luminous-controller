@@ -118,10 +118,10 @@ router.post('/effects', function(req, res) {
       break;
 
   }
-  var colorArray = colorHelper.arrayToHexString(pixelData);
+
   res.json({
     stripState: stripState,
-    pixelData: colorArray
+    pixelData: colorHelper.arrayToHexString(pixelData)
   });
 
 }).post('/scene', function(req, res) {
@@ -129,7 +129,7 @@ router.post('/effects', function(req, res) {
   basicScenes.basicScence(pixelData, req.body.scene, req.body.divisions,  stripState, req.body.divisionType);
   res.json({
     stripState: stripState,
-    pixelData: pixelData
+    pixelData: colorHelper.arrayToHexString(pixelData)
   });
 
 }).post('/color', function(req, res) {
@@ -137,14 +137,14 @@ router.post('/effects', function(req, res) {
   interval = color.setColor(pixelData, req.body.color, stripState);
   res.json({
     stripState: stripState,
-    color: pixelData
+    pixelData: colorHelper.arrayToHexString(pixelData)
   });
 
 }).post('/brightness', function(req, res) {
-  var brightnessValue = ((req.body.brightness / 100) * 255);
-  stripState.brightness = brightnessValue;
+  stripState.brightness = req.body.brightness;
   res.json({
-    stripState: stripState
+    stripState: stripState,
+    pixelData : colorHelper.arrayToHexString(pixelData)
   });
 
 }).post('/on', function(req, res) {
@@ -152,7 +152,7 @@ router.post('/effects', function(req, res) {
   power.setPower( pixelData, interval, 0xFFFFFF, 'on', stripState, previousStateArray);
   res.json({
     stripState: stripState,
-    color: pixelData
+    pixelData: colorHelper.arrayToHexString(pixelData)
   });
 }).post('/off', function(req, res) {
     clearInterval(interval);
@@ -160,10 +160,22 @@ router.post('/effects', function(req, res) {
     previousStateArray = colorArray.slice(0);
     res.json({
       stripState: stripState,
-      color: pixelData,
+      pixelData: colorHelper.arrayToHexString(pixelData),
       previousState : previousStateArray
     });
-  });
+}).post('/toggle', function(req, res) {
+    clearInterval(interval);
+    if (stripState.power) {
+      var colorArray = power.setPower( pixelData, interval, 0xFFFFFF, 'off', stripState);
+      previousStateArray = colorArray.slice(0);
+    } else {
+      power.setPower( pixelData, interval, 0xFFFFFF, 'on', stripState, previousStateArray);
+    }
+    res.json({
+      stripState: stripState,
+      pixelData: colorHelper.arrayToHexString(pixelData)
+});
+});
 
 //stop the the running function
 router.get('/stop', function(req, res) {
@@ -171,39 +183,38 @@ router.get('/stop', function(req, res) {
   stripState.setMode('stopped' , 'stopped', 'stopped');
   res.json({
     stripState: stripState,
-    color: pixelData
+    pixelData: colorHelper.arrayToHexString(pixelData)
   });
-  //turn the lights off
 }).get('/off', function(req, res) {
   clearInterval(interval);
   previousStateArray = power.setPower( pixelData, interval, 0xFFFFFF, 'off', stripState);
   res.json({
     stripState: stripState,
-    color: pixelData,
+    pixelData: colorHelper.arrayToHexString(pixelData),
     previousState : previousStateArray
   });
   //get the current state information for the light
 }).get('/state', function(req, res) {
-  var colorArray = colorHelper.arrayToHexString(pixelData);
+
   res.json({
     stripState: stripState,
-    pixel_color: colorArray
+    pixelData: colorHelper.arrayToHexString(pixelData)
   });
 }).get('/on', function(req, res) {
   clearInterval(interval);
   power.setPower( pixelData, interval, 0xFFFFFF, 'on', stripState, previousStateArray);
   res.json({
     stripState: stripState,
-    color: pixelData
+    pixelData: colorHelper.arrayToHexString(pixelData)
   });
 });
 
 
 io.on('connection', function(socket) {
-
+  var colorArray = colorHelper.arrayToHexString(pixelData);
   socket.emit('state', {
     stripState: stripState,
-    pixelData: pixelData
+    pixelData: colorArray
   });
 
   //modes are effects
@@ -270,7 +281,7 @@ io.on('connection', function(socket) {
   socket.on('status', function(data) {
     console.log(data);
     socket.emit('color', {
-      color: pixelData[1]
+      pixelData: pixelData[0]
     });
 
   });

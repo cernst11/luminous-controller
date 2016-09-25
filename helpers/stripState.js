@@ -14,7 +14,7 @@ class StripState    {
      * @param  {string} modeType     The type of mode ex. breathe/ intense
      * @param  {string} activeState  Is the mode active
      */
-    constructor(power, num_leds, brightness, selectedMode, modeType, activeState, strandType = 'ws2812'){
+    constructor(power, num_leds, brightness, selectedMode, modeType, activeState, location = 'Living Room', strandType = 'ws2812'){
       this._numLEDS = num_leds;
       this._power = power;
       this._brightness = Math.min(Math.max(parseInt(brightness), 0), 255);
@@ -23,6 +23,7 @@ class StripState    {
       this._mode.modeType = modeType;
       this._mode.activeState = activeState;
       this._strand_type = strandType;
+      this._location = location;
       this.intializeStrand(this._numLEDS);
     }
 

@@ -20,7 +20,7 @@ Array.prototype.randomElement = function () {
  * @param  {number} divisions  -  The number of divisions
  * @param  {string} divisionType - How to go from one divison to the next(Fade or Fixed)
  */
-var showScene = function (pixelData, scene,  divisions, stripState, divisionType = 'fixed'){
+var showScene = function (pixelData, scene,  divisions = 4 , stripState, divisionType = 'fixed'){
 
     //color.color(stripState.numLEDS, pixelData, ws281x, black);
 
@@ -72,7 +72,7 @@ if(divisionType === 'fixed'  ){
           while(newColor.length< 6){
             newColor = '0' +  newColor ;
           }
-    
+
 
           pixelData[pixelPos] = newColor;
           pixelPos++;

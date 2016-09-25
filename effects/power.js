@@ -17,23 +17,23 @@ function setPower(pixelData, interval, colorValue, toPowerMode, stripState, prev
   clearInterval(interval);
   //if coming from a a std off
   if (stripState.brightness <= 0 && toPowerMode === 'on') {
-  for (var i = 0; i < stripState.numLEDS; i++) {
-      pixelData[i] = previousColorArray[i];
-    }
+    for (var i = 0; i < stripState.numLEDS; i++) {
+        pixelData[i] = previousColorArray[i];
+      }
 
-    stripState.render(pixelData);
+      stripState.render(pixelData);
 
-    fadePowerOn(interval, stripState);
+      fadePowerOn(interval, stripState);
 
     //If coming from a server restart
   } else if (stripState.brightness === 255 && stripState.power === false) {
-    stripState.brightness = 0;
-    color.setColor(stripState.numLEDS, pixelData, 0xFFFFFF);
-    fadePowerOn(interval, stripState);
+      stripState.brightness = 0;
+      color.setColor(stripState.numLEDS, pixelData, 0xFFFFFF);
+      fadePowerOn(interval, stripState);
 
 
   } else if (toPowerMode === 'off' && stripState.power === true) {
-    
+
     var colorArray;
     colorArray = pixelData.slice(0);
     interval = setInterval(function() {
