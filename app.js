@@ -92,7 +92,13 @@ server_udp.on('message', function(message, remote) {
 });
 
 //Force the array to emppty on start
-color.setColor(pixelData, 0xFFFFFF, stripState);
+let initalColor = 0x000000;
+color.setColor(pixelData, initalColor, stripState);
+
+if(initalColor === 0x000000){
+  stripState.power = false;
+  
+}
 
 //rest controller
 router.post('/effects', function(req, res) {
@@ -211,77 +217,42 @@ router.get('/stop', function(req, res) {
 
 
 io.on('connection', function(socket) {
-  var colorArray = colorHelper.arrayToHexString(pixelData);
-  socket.emit('state', {
+
+  socket.emit('stripProperties', {
     stripState: stripState,
-    pixelData: colorArray
+    pixelData: colorHelper.arrayToHexString(pixelData)
   });
 
-  //modes are effects
-  socket.on('mode', function(data) {
 
-    switch (data.mode) {
-      case 'color':
-        stripState.power = true;
-        clearInterval(interval);
-        var colorValue = data.color;
-        color.setColor(pixelData, colorValue, stripState);
-        socket.emit('state', {
-          stripState: stripState,
-          pixelData: pixelData
-        });
-        break;
-    }
+  socket.on('changeColor', function(data){
+    color.setColor(pixelData, data.color, stripState);
+    socket.emit('state', {
+      stripState: stripState,
+      pixelData: colorHelper.arrayToHexString(pixelData)[0]
+    });
   });
 
-  /**
-   * State controls the play pause action
-   */
-  socket.on('state', function(data) {
-
-    if (data.state === 'stop') {
-      clearInterval(interval);
-    }
-    console.log(data.state);
+  socket.on('changeBrightness', function(data){
+    stripState.brightness = data.brightness;
+    socket.emit('state', {
+      stripState: stripState,
+      pixelData: colorHelper.arrayToHexString(pixelData)
+    });
   });
-
-  /**
-   * Set stripProprties
-   */
-  socket.on('stripProperties', function(data) {
-    console.log(data);
-    switch (data.property) {
-
-      case 'brightness':
-        var brightnessValue = ((data.brightnessLevel / 100) * 255);
-        //stripState.setBrightness(brightnessValue);
-        stripState.brightness = Math.floor(brightnessValue);
-        break;
-      case 'power':
-        //if power is true turn it off
-        if (stripState.power) {
-          var colorArray = power.setPower( pixelData, interval, 0xFFFFFF, 'off', stripState);
-          previousStateArray = colorArray.slice(0);
-        } else {
-          power.setPower( pixelData, interval, 0xFFFFFF, 'on', stripState, previousStateArray);
-        }
-        break;
-    }
-  });
-
 
   socket.on('getStripProperties', function(data) {
     console.log(data);
     socket.emit('stripState', {
       stripState: stripState,
+      pixelData: colorHelper.arrayToHexString(pixelData)
     });
 
   });
 
-  socket.on('status', function(data) {
+  socket.on('colorStatus', function(data) {
     console.log(data);
     socket.emit('color', {
-      pixelData: pixelData[0]
+      pixelData: colorHelper.arrayToHexString(pixelData)
     });
 
   });

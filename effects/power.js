@@ -13,22 +13,21 @@ var color = require('./color');
  * @return {type}             description
  */
 function setPower(pixelData, interval, colorValue, toPowerMode, stripState, previousColorArray) {
-  console.log(stripState);
+
   clearInterval(interval);
   //if coming from a a std off
+
   if (stripState.brightness <= 0 && toPowerMode === 'on') {
-    for (var i = 0; i < stripState.numLEDS; i++) {
+    for (var i = 0; i < stripState.numLEDS; i++) { 
         pixelData[i] = previousColorArray[i];
       }
-
       stripState.render(pixelData);
-
       fadePowerOn(interval, stripState);
 
     //If coming from a server restart
   } else if (stripState.brightness === 255 && stripState.power === false) {
       stripState.brightness = 0;
-      color.setColor(stripState.numLEDS, pixelData, 0xFFFFFF);
+      color.setColor(pixelData, 0x555555, stripState);
       fadePowerOn(interval, stripState);
 
 
