@@ -22,7 +22,7 @@ var theaterChase = require('./effects/theaterChase');
 var rotate = require('./effects/rotate');
 var rawColor = require('./effects/raw');
 var color = require('./effects/color');
-var power = require('./effects/power');
+var power = require('./effects/power').power;
 
 var colorHelper = require('./helpers/colorHelper').colorHelper;
 
@@ -97,7 +97,8 @@ color.setColor(pixelData, initalColor, stripState);
 
 if(initalColor === 0x000000){
   stripState.power = false;
-  
+  stripState.setMode('off', 'off', 'stopped');
+
 }
 
 //rest controller
@@ -157,31 +158,35 @@ router.post('/effects', function(req, res) {
   clearInterval(interval);
   power.setPower( pixelData, interval, 0xFFFFFF, 'on', stripState, previousStateArray);
   res.json({
-    stripState: stripState,
-    pixelData: colorHelper.arrayToHexString(pixelData)
+    stripState : power.powerResponse('on', stripState),
+    pixelData : colorHelper.arrayToHexString(pixelData)
   });
 }).post('/off', function(req, res) {
     clearInterval(interval);
     var colorArray = power.setPower( pixelData, interval, 0xFFFFFF, 'off', stripState);
     previousStateArray = colorArray.slice(0);
     res.json({
-      stripState: stripState,
-      pixelData: colorHelper.arrayToHexString(pixelData),
-      previousState : previousStateArray
+      stripState : power.powerResponse('off', stripState),
+      pixelData : colorHelper.arrayToHexString(pixelData)
     });
 }).post('/toggle', function(req, res) {
     clearInterval(interval);
+    let toPower = false;
     if (stripState.power) {
       var colorArray = power.setPower( pixelData, interval, 0xFFFFFF, 'off', stripState);
       previousStateArray = colorArray.slice(0);
     } else {
+      toPower = true;
       power.setPower( pixelData, interval, 0xFFFFFF, 'on', stripState, previousStateArray);
     }
     res.json({
-      stripState: stripState,
-      pixelData: colorHelper.arrayToHexString(pixelData)
+        stripState : power.powerResponse(toPower, stripState),
+        pixelData : colorHelper.arrayToHexString(pixelData)
+    });
+
 });
-});
+
+
 
 //stop the the running function
 router.get('/stop', function(req, res) {
@@ -196,12 +201,11 @@ router.get('/stop', function(req, res) {
   previousStateArray = power.setPower( pixelData, interval, 0xFFFFFF, 'off', stripState);
   res.json({
     stripState: stripState,
-    pixelData: colorHelper.arrayToHexString(pixelData),
+    pixelData: power.powerResponse('off', stripState),
     previousState : previousStateArray
   });
   //get the current state information for the light
 }).get('/state', function(req, res) {
-
   res.json({
     stripState: stripState,
     pixelData: colorHelper.arrayToHexString(pixelData)
@@ -210,7 +214,7 @@ router.get('/stop', function(req, res) {
   clearInterval(interval);
   power.setPower( pixelData, interval, 0xFFFFFF, 'on', stripState, previousStateArray);
   res.json({
-    stripState: stripState,
+    stripState: power.powerResponse('on', stripState),
     pixelData: colorHelper.arrayToHexString(pixelData)
   });
 });
@@ -222,7 +226,6 @@ io.on('connection', function(socket) {
     stripState: stripState,
     pixelData: colorHelper.arrayToHexString(pixelData)
   });
-
 
   socket.on('changeColor', function(data){
     color.setColor(pixelData, data.color, stripState);
@@ -257,6 +260,13 @@ io.on('connection', function(socket) {
 
   });
 
+  socket.on('rawColor', function(data) {
+    rawColor.raw(pixelData, data.message, stripState);
+    socket.emit('color', {
+      pixelData: colorHelper.arrayToHexString(pixelData)
+    });
+
+  });
 
 });
 
