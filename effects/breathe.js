@@ -24,11 +24,11 @@ var breathe = function (startValue, stripState) {
  * @param  {number} refreshRate -  How quickly to breathe in milliseconds
  * @returns {object}                 The interval object
  */
-var  startBreathe = function (interval,  stripState, refreshRate = (1000/30)) {
+var  startBreathe = function (stripState, refreshRate = (1000/30)) {
 
     //clearInterval(interval);
     var startValue = Date.now();
-    interval = setInterval(function () {
+    stripState.interval = setInterval(function () {
         breathe(startValue, stripState);
     }, refreshRate);
 
@@ -36,7 +36,7 @@ var  startBreathe = function (interval,  stripState, refreshRate = (1000/30)) {
     stripState.setMode('effects', 'breathe', 'started');
     stripState.power = true;
 
-    return interval;
+
 };
 
 module.exports.startBreathe = startBreathe;

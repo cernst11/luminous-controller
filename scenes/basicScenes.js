@@ -15,14 +15,14 @@ Array.prototype.randomElement = function () {
  * anonymous function - Show  a scene
  *
  * @param  {number} stripState.numLEDS   -  The number of leds
- * @param  {object} pixelData  -  The pixel colors
+ * @param  {object} stripState.pixelData  -  The pixel colors
  * @param  {string} scene      -   The scene to show
  * @param  {number} divisions  -  The number of divisions
  * @param  {string} divisionType - How to go from one divison to the next(Fade or Fixed)
  */
-var showScene = function (pixelData, scene,  divisions = 4 , stripState, divisionType = 'fixed'){
+var showScene = function ( scene, stripState , divisionType = 'fixed' , divisions = 4 ){
 
-    //color.color(stripState.numLEDS, pixelData, ws281x, black);
+    //color.color(stripState.numLEDS, stripState.pixelData, ws281x, black);
 
     var colorHelper = require('../helpers/colorHelper').colorHelper;
     var divisionColor;
@@ -42,7 +42,7 @@ if(divisionType === 'fixed'  ){
         divisionColor = selectedScene[scene].randomElement();
         //for each value in
         for (let j=0; j<pixelsInDivision; j++){
-            pixelData[pixelPos] = divisionColor;
+            stripState.pixelData[pixelPos] = divisionColor;
             pixelPos++;
         }
     }
@@ -63,7 +63,7 @@ if(divisionType === 'fixed'  ){
 
       var newArr = colorHelper.fadeColor(divisionColorArray[k], divisionColorArray[k+1],(pixelsInDivision -1));
       //make sure to show the first color in the division
-      pixelData[pixelPos] = divisionColorArray[k];
+      stripState.pixelData[pixelPos] = divisionColorArray[k];
       pixelPos++;
       for (let j=0; j<newArr.length; j++){
           var newColor = parseInt(newArr[j], 16);
@@ -74,17 +74,17 @@ if(divisionType === 'fixed'  ){
           }
 
 
-          pixelData[pixelPos] = newColor;
+          stripState.pixelData[pixelPos] = newColor;
           pixelPos++;
 
       }
       //make sure to show the last color in the pixel division
-      pixelData[pixelPos] = divisionColorArray[k+1];
+      stripState.pixelData[pixelPos] = divisionColorArray[k+1];
     }
 
   }
 
-  stripState.render(pixelData);
+  stripState.render();
   stripState.setMode('scene', 'basicScence', 'started');
 
 };

@@ -6,46 +6,41 @@ var power =  {
 
   /**
    *  Set the power on or off
-   * @param  {number} stripState.numLEDS    description
-   * @param  {uint32array} pixelData   description
-   * @param  {object} interval    description
-   * @param  {number} colorValue  description
    * @param  {string} toPowerMode description
    * @param  {object} stripState  description
    * @return {type}             description
    */
-   setPower: function(pixelData, interval, colorValue, toPowerMode, stripState, previousColorArray) {
+   setPower: function( toPowerMode, stripState, previousColorArray) {
 
-    clearInterval(interval);
+    clearInterval(stripState.interval);
     //if coming from a a std off
 
     if (stripState.brightness <= 0 && toPowerMode === 'on') {
       for (var i = 0; i < stripState.numLEDS; i++) {
-        pixelData[i] = previousColorArray[i];
+        stripState.pixelData[i] = previousColorArray[i];
       }
-      stripState.render(pixelData);
-      this.fadePowerOn(interval, stripState);
+      stripState.render();
+      this.fadePowerOn( stripState);
 
       //If coming from a server restart
     } else if (stripState.brightness === 255 && stripState.power === false) {
       stripState.brightness = 0;
-      color.setColor(pixelData, 0x555555, stripState);
-      this.fadePowerOn(interval, stripState);
+      color.setColor( 0x555555, stripState);
+      this.fadePowerOn( stripState);
 
 
     } else if (toPowerMode === 'off' && stripState.power === true) {
 
       var colorArray;
-      colorArray = pixelData.slice(0);
-      interval = setInterval(function() {
-        stripState.render(pixelData);
+      colorArray = stripState.pixelData.slice(0);
+      stripState.interval = setInterval(function() {
+        stripState.render();
         if (stripState.brightness <= 0) {
-          console.log(stripState);
           //stripState.setBrightness(0);
-          color.setColor(pixelData, 0x000000, stripState);
+          color.setColor( 0x000000, stripState);
           stripState.power = false;
           stripState.setMode('off', 'off', 'stopped');
-          clearInterval(interval);
+          clearInterval(stripState.interval);
         } else {
           stripState.brightness = stripState.brightness - 1;
         }
@@ -63,14 +58,14 @@ var power =  {
    * @param  {object} interval   The interval object
    * @param  {object} stripState The state of the strip
    */
-   fadePowerOn : function(interval, stripState) {
+   fadePowerOn : function( stripState) {
 
     stripState.power = true;
     stripState.setMode('on', 'on', 'stopped');
 
-    interval = setInterval(function() {
+    stripState.interval = setInterval(function() {
       if (stripState.brightness >= 255) {
-        clearInterval(interval);
+        clearInterval(stripState.interval);
       } else {
         stripState.brightness = stripState.brightness + 1;
       }
@@ -87,8 +82,6 @@ var power =  {
     * @return {object}            description
     */
    powerResponse : function(toPower, stripState) {
-    console.log(typeof toPower);
-    console.log(toPower);
 
     if (toPower === false) {
 

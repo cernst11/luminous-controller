@@ -1,6 +1,7 @@
 /* jshint node: true */
 
 var ws281x = require('rpi-ws281x-native');
+var colorHelper = require('../helpers/colorHelper').colorHelper;
 
 class StripState    {
 
@@ -24,7 +25,10 @@ class StripState    {
       this._mode.activeState = activeState;
       this._strand_type = strandType;
       this._location = location;
+      this.pixelData = new Uint32Array(num_leds);
       this.intializeStrand(this._numLEDS);
+
+      //this._interval = interval;
     }
 
     intializeStrand(num_leds){
@@ -35,9 +39,10 @@ class StripState    {
       ws281x.reset();
     }
 
-    render(pixelData){
-      ws281x.render(pixelData);
+    render(){
+      ws281x.render(this.pixelData);
     }
+
 
 
     /**
@@ -91,6 +96,27 @@ class StripState    {
 
     set numLEDS(NUM_LEDS){
       this._numLEDS = NUM_LEDS;
+    }
+
+    /**
+     *
+    /**
+     * toJSON - Custom serilze method
+     *
+     * @return {object}  The stripState object to json
+     */
+
+    toJSON () {
+        var result = {};
+        for (var x in this) {
+
+            if (x !== 'interval' ) {
+                result[x] = this[x];
+            }else  if (x === 'pixelData' ) {
+                result[x] = colorHelper.arrayToHexString(this[x]);
+            }
+        }
+        return result;
     }
 
 

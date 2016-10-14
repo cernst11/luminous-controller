@@ -12,13 +12,13 @@
  * @param  {number} color      - The hex integer color
  * @param  {boolean} fadeIn     - Fade in to the color
  */
-var color = function( pixelData, color, stripState) {
+var color = function(color, stripState) {
 
   for (var i = 0; i < stripState.numLEDS; i++) {
-    pixelData[i] = color;
+    stripState.pixelData[i] = color;
   }
 
-  stripState.render(pixelData);
+  stripState.render();
 
   if (typeof stripState !== 'undefined'  ) {
     stripState.setMode('color', 'color', 'started');
