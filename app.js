@@ -14,10 +14,6 @@ var router = express.Router();
 var rawColor = require('./effects/raw');
 var color = require('./effects/color');
 
-//scenes
-var basicScenes = require('./scenes/basicScenes');
-
-
 var app = express();
 
 
@@ -87,38 +83,6 @@ if(initalColor === 0x000000){
 
 }
 
-//rest controller
-router.post('/scene', function(req, res) {
-  clearInterval(stripState.interval);
-  basicScenes.basicScence( req.body.scene, stripState, req.body.divisionType, req.body.divisions );
-  res.json({
-    stripState: stripState,
-  });
-
-}).post('/color', function(req, res) {
-  clearInterval(stripState.interval);
-  color.setColor(req.body.color, stripState);
-  res.json({
-    stripState: stripState,
-  });
-
-}).post('/brightness', function(req, res) {
-  stripState.brightness = req.body.brightness;
-  res.json({
-    stripState: stripState,
-  });
-});
-
-//stop the the running function
-router.get('/stop', function(req, res) {
-  clearInterval(stripState.interval);
-  stripState.setMode('stopped' , 'stopped', 'stopped');
-  res.json({
-    stripState: stripState,
-  });
-});
-
-
 io.on('connection', function(socket) {
 
   socket.emit('stripProperties', {
@@ -168,6 +132,11 @@ io.on('connection', function(socket) {
 var powerRoute = require('./routes/power');
 var effects = require('./routes/effects');
 var routes = require('./routes/index');
+var brightness = require('./routes/brightness');
+var color = require('./routes/color');
+var state = require('./routes/state');
+var scene = require('./routes/scene');
+
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -181,6 +150,11 @@ app.use('/mode', router);
 app.use('/', routes);
 app.use('/api/power', powerRoute);
 app.use('/api/effects', effects);
+app.use('/api/brightness', brightness);
+app.use('/api/color', color);
+app.use('/api/state', state);
+app.use('/api/scene', scene);
+
 //app.use('/users', users);
 
 // catch 404 and forward to error handler

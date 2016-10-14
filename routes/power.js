@@ -32,10 +32,26 @@ router.post('/toggle', function(req, res) {
 }).post('/off', function(req, res) {
     let stripState = req.app.get('stripState');
     let colorArray = power.setPower('off', stripState);
-    
+
     req.app.set('previousStateArray', colorArray);
     res.json({
         stripState: power.powerResponse('off', stripState),
+    });
+
+}).post('/stop', function(req, res) {
+    let stripState = req.app.get('stripState');
+
+    clearInterval(stripState.interval);
+    stripState.setMode('stopped' , 'stopped', 'stopped');
+    res.json({
+      stripState: stripState
+    });
+
+}).get('/', function(req, res) {
+    let stripState = req.app.get('stripState');
+
+    res.json({
+        power: stripState.power
     });
 
 });

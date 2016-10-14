@@ -112,7 +112,8 @@ class StripState    {
 
             if (x !== 'interval' ) {
                 result[x] = this[x];
-            }else  if (x === 'pixelData' ) {
+            }  
+            if (x === 'pixelData' ) {
                 result[x] = colorHelper.arrayToHexString(this[x]);
             }
         }
