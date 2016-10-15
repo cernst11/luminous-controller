@@ -1,6 +1,7 @@
 /* jshint node: true */
 
 var ws281x = require('rpi-ws281x-native');
+var colorHelper = require('../helpers/colorHelper').colorHelper;
 
 class StripState    {
 
@@ -14,7 +15,7 @@ class StripState    {
      * @param  {string} modeType     The type of mode ex. breathe/ intense
      * @param  {string} activeState  Is the mode active
      */
-    constructor(power, num_leds, brightness, selectedMode, modeType, activeState, strandType = 'ws2812'){
+    constructor(power, num_leds, brightness, selectedMode, modeType, activeState, location = 'Living Room', strandType = 'ws2812'){
       this._numLEDS = num_leds;
       this._power = power;
       this._brightness = Math.min(Math.max(parseInt(brightness), 0), 255);
@@ -23,7 +24,11 @@ class StripState    {
       this._mode.modeType = modeType;
       this._mode.activeState = activeState;
       this._strand_type = strandType;
+      this._location = location;
+      this.pixelData = new Uint32Array(num_leds);
       this.intializeStrand(this._numLEDS);
+
+      //this._interval = interval;
     }
 
     intializeStrand(num_leds){
@@ -34,9 +39,10 @@ class StripState    {
       ws281x.reset();
     }
 
-    render(pixelData){
-      ws281x.render(pixelData);
+    render(){
+      ws281x.render(this.pixelData);
     }
+
 
 
     /**
@@ -90,6 +96,28 @@ class StripState    {
 
     set numLEDS(NUM_LEDS){
       this._numLEDS = NUM_LEDS;
+    }
+
+    /**
+     *
+    /**
+     * toJSON - Custom serilze method
+     *
+     * @return {object}  The stripState object to json
+     */
+
+    toJSON () {
+        var result = {};
+        for (var x in this) {
+
+            if (x !== 'interval' ) {
+                result[x] = this[x];
+            }  
+            if (x === 'pixelData' ) {
+                result[x] = colorHelper.arrayToHexString(this[x]);
+            }
+        }
+        return result;
     }
 
 
