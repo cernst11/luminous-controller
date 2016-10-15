@@ -1,5 +1,4 @@
 //Default imports
-//
 'use strict';
 
 var express = require('express');
@@ -8,31 +7,15 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-//var tinycolor = require('tinycolor2');
 
 var router = express.Router();
 
-//light stuff
-//var ws281x = require('rpi-ws281x-native');
-
 //effects
-var rainbow = require('./effects/rainbow');
-var breathe = require('./effects/breathe');
-var theaterChase = require('./effects/theaterChase');
-var rotate = require('./effects/rotate');
 var rawColor = require('./effects/raw');
 var color = require('./effects/color');
-var power = require('./effects/power');
 
-var colorHelper = require('./helpers/colorHelper').colorHelper;
-
-//scenes
-var basicScenes = require('./scenes/basicScenes');
-
-//include routes
-var routes = require('./routes/index');
-//var users = require('./routes/users');
 var app = express();
+
 
 //include socket stuff
 var server = require('http').Server(app);
@@ -43,11 +26,6 @@ var UDP_PORT = 6883;
 var HOST = server.address.address;
 var dgram = require('dgram');
 var server_udp = dgram.createSocket('udp4');
-
-var interval;
-
-
-
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -62,12 +40,16 @@ server_udp.bind(UDP_PORT, HOST);
 
 //set up and intialize the pixels
 var NUM_LEDS = parseInt(process.argv[2], 60) || 60 ;
-var pixelData = new Uint32Array(NUM_LEDS);
+var previousState= {};
 var previousStateArray =  new Uint32Array(NUM_LEDS);
+previousState.previousStateArray = previousStateArray;
 
 let StripState = require('./helpers/stripState');
 let stripState = new StripState.StripState(false, NUM_LEDS, 255, 'off' , 'off', 'stopped');
-console.log(stripState);
+
+//pass the strip and previous state as global array
+app.set('stripState', stripState);
+app.set('previousStateArray', previousStateArray);
 
 //ws281x.init(stripState.numLEDS);
 
@@ -88,176 +70,38 @@ server_udp.on('listening', function() {
 
 server_udp.on('message', function(message, remote) {
   console.log(remote);
-  rawColor.raw(pixelData, message, stripState);
+  rawColor.raw(message, stripState);
 });
 
 //Force the array to emppty on start
-color.setColor(pixelData, 0xFFFFFF, stripState);
+let initalColor = 0xFFFFFF;
+color.setColor(initalColor, stripState);
 
-//rest controller
-router.post('/effects', function(req, res) {
+if(initalColor === 0x000000){
+  stripState.power = false;
+  stripState.setMode('off', 'off', 'stopped');
 
-  clearInterval(interval);
-  stripState.brightness = 255;
-  switch (req.body.effect) {
-    case 'breathe':
-      interval = breathe.startBreathe(interval, stripState, req.body.refresh);
-      console.log(interval);
-      break;
-    case 'rainbow':
-      interval = rainbow.startRainbow( pixelData, interval,  stripState, req.body.refresh);
-      break;
-    case 'theaterChase':
-      interval = theaterChase.startTheaterChase( pixelData, req.body.color, interval, req.body.refresh, stripState);
-      break;
-    case 'rotate':
-      interval = rotate.startRotate( pixelData, interval, stripState,  req.body.refresh, req.body.color, req.body.fillColor,  req.body.lit);
-      break;
-    case 'rawColor':
-      rawColor.raw( pixelData, req.body.colorString, stripState);
-      break;
-
-  }
-  var colorArray = colorHelper.arrayToHexString(pixelData);
-  res.json({
-    stripState: stripState,
-    pixelData: colorArray
-  });
-
-}).post('/scene', function(req, res) {
-  clearInterval(interval);
-  basicScenes.basicScence(pixelData, req.body.scene, req.body.divisions,  stripState, req.body.divisionType);
-  res.json({
-    stripState: stripState,
-    pixelData: pixelData
-  });
-
-}).post('/color', function(req, res) {
-  clearInterval(interval);
-  interval = color.setColor(pixelData, req.body.color, stripState);
-  res.json({
-    stripState: stripState,
-    color: pixelData
-  });
-
-}).post('/brightness', function(req, res) {
-  var brightnessValue = ((req.body.brightness / 100) * 255);
-  stripState.brightness = brightnessValue;
-  res.json({
-    stripState: stripState
-  });
-
-}).post('/on', function(req, res) {
-  clearInterval(interval);
-  power.setPower( pixelData, interval, 0xFFFFFF, 'on', stripState, previousStateArray);
-  res.json({
-    stripState: stripState,
-    color: pixelData
-  });
-}).post('/off', function(req, res) {
-    clearInterval(interval);
-    var colorArray = power.setPower( pixelData, interval, 0xFFFFFF, 'off', stripState);
-    previousStateArray = colorArray.slice(0);
-    res.json({
-      stripState: stripState,
-      color: pixelData,
-      previousState : previousStateArray
-    });
-  });
-
-//stop the the running function
-router.get('/stop', function(req, res) {
-  clearInterval(interval);
-  stripState.setMode('stopped' , 'stopped', 'stopped');
-  res.json({
-    stripState: stripState,
-    color: pixelData
-  });
-  //turn the lights off
-}).get('/off', function(req, res) {
-  clearInterval(interval);
-  previousStateArray = power.setPower( pixelData, interval, 0xFFFFFF, 'off', stripState);
-  res.json({
-    stripState: stripState,
-    color: pixelData,
-    previousState : previousStateArray
-  });
-  //get the current state information for the light
-}).get('/state', function(req, res) {
-  var colorArray = colorHelper.arrayToHexString(pixelData);
-  res.json({
-    stripState: stripState,
-    pixel_color: colorArray
-  });
-}).get('/on', function(req, res) {
-  clearInterval(interval);
-  power.setPower( pixelData, interval, 0xFFFFFF, 'on', stripState, previousStateArray);
-  res.json({
-    stripState: stripState,
-    color: pixelData
-  });
-});
-
+}
 
 io.on('connection', function(socket) {
 
-  socket.emit('state', {
+  socket.emit('stripProperties', {
     stripState: stripState,
-    pixelData: pixelData
   });
 
-  //modes are effects
-  socket.on('mode', function(data) {
-
-    switch (data.mode) {
-      case 'color':
-        stripState.power = true;
-        clearInterval(interval);
-        var colorValue = data.color;
-        color.setColor(pixelData, colorValue, stripState);
-        socket.emit('state', {
-          stripState: stripState,
-          pixelData: pixelData
-        });
-        break;
-    }
+  socket.on('changeColor', function(data){
+    color.setColor( data.color, stripState);
+    socket.emit('state', {
+      stripState: stripState,
+    });
   });
 
-  /**
-   * State controls the play pause action
-   */
-  socket.on('state', function(data) {
-
-    if (data.state === 'stop') {
-      clearInterval(interval);
-    }
-    console.log(data.state);
+  socket.on('changeBrightness', function(data){
+    stripState.brightness = data.brightness;
+    socket.emit('state', {
+      stripState: stripState,
+    });
   });
-
-  /**
-   * Set stripProprties
-   */
-  socket.on('stripProperties', function(data) {
-    console.log(data);
-    switch (data.property) {
-
-      case 'brightness':
-        var brightnessValue = ((data.brightnessLevel / 100) * 255);
-        //stripState.setBrightness(brightnessValue);
-        stripState.brightness = Math.floor(brightnessValue);
-        break;
-      case 'power':
-        //if power is true turn it off
-        if (stripState.power) {
-          var colorArray = power.setPower( pixelData, interval, 0xFFFFFF, 'off', stripState);
-          previousStateArray = colorArray.slice(0);
-        } else {
-          power.setPower( pixelData, interval, 0xFFFFFF, 'on', stripState, previousStateArray);
-        }
-        break;
-    }
-  });
-
 
   socket.on('getStripProperties', function(data) {
     console.log(data);
@@ -267,16 +111,32 @@ io.on('connection', function(socket) {
 
   });
 
-  socket.on('status', function(data) {
+  socket.on('colorStatus', function(data) {
     console.log(data);
     socket.emit('color', {
-      color: pixelData[1]
     });
 
   });
 
+  socket.on('rawColor', function(data) {
+    rawColor.raw( data.message, stripState);
+    socket.emit('color', {
+      stripState: stripState
+    });
+
+  });
 
 });
+
+//include routes
+var powerRoute = require('./routes/power');
+var effects = require('./routes/effects');
+var routes = require('./routes/index');
+var brightness = require('./routes/brightness');
+var colorRoute = require('./routes/color');
+var state = require('./routes/state');
+var scene = require('./routes/scene');
+
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -288,6 +148,13 @@ app.use(express.static(path.join(__dirname, 'public/dist')));
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
 app.use('/mode', router);
 app.use('/', routes);
+app.use('/api/power', powerRoute);
+app.use('/api/effects', effects);
+app.use('/api/brightness', brightness);
+app.use('/api/color', colorRoute);
+app.use('/api/state', state);
+app.use('/api/scene', scene);
+
 //app.use('/users', users);
 
 // catch 404 and forward to error handler

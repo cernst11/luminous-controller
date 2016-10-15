@@ -1,3 +1,4 @@
+'use strict';
 /**
  *Have the lights chase like in a theater
  */
@@ -6,36 +7,32 @@ var black = 0x000000;
 
 /**
  * Display the lights
- * @param {uint32array} pixelData - The strip pixel data
  * @param {number} lit - The iteration in the loop
  * @param {object} stripState - The strip object
  * @param {number} colorValue - The hex color value to set
  */
-var theaterChase = function (pixelData, lit, stripState, colorValue){
+var theaterChase = function ( lit, stripState, colorValue){
     //set the pixel in the strip
-    pixelData[lit] = colorValue;
-    stripState.render(pixelData);
+    stripState.pixelData[lit] = colorValue;
+    stripState.render();
 };
 
 
 /**
  * Chase lights like in a theater
- * @param {number} num_leds - The number of leds
- * @param {uint32array} pixelData - The pixel data
+ * @param {object} stripState - The strip object
  * @param {number} colorValue - The hex color value to use
- * @param {object} interval - The interval object
  * @param {number} refreshRate - The rate at which the animation goes in milliseconds
- * @returns {object} The interval object
  */
-var  startTheaterChase = function( pixelData, colorValue = 0xFFFFFF, interval, refreshRate = 250, stripState){
+var  startTheaterChase = function( stripState, colorValue = 0xFFFFFF, refreshRate = 250 ){
 
-    color.setColor( pixelData, black, stripState);
+    color.setColor(black, stripState);
     var lit  = 1;
-    interval = setInterval(function () {
-        theaterChase(pixelData, lit, stripState, colorValue);
-        if(lit == stripState.numLEDS){
+    stripState.interval = setInterval(function () {
+        theaterChase(lit, stripState, colorValue);
+        if(lit === stripState.numLEDS){
             lit = 0;
-            color.setColor(pixelData, black, stripState);
+            color.setColor(black, stripState);
         }else {
             lit++;
         }
@@ -45,7 +42,6 @@ var  startTheaterChase = function( pixelData, colorValue = 0xFFFFFF, interval, r
     //set the strip properties
     stripState.setMode('effects', 'theaterChase', 'started');
     stripState.power = true;
-    return interval;
 
 
 };

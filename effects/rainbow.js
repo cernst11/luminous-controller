@@ -26,17 +26,19 @@ function colorwheel(pos) {
 /**
  * The effect for rainbow mode
  * @param {number} num_leds - The number of leds to use
- * @param {uint32array} pixelData - The pixelData object to use
+ * @param {uint32array} stripState.pixelData - The stripState.pixelData object to use
  * @param {number} offset - The offset to use outside of the setInterval function
  * @param {object} stripState - The strip object to control
  */
-var rainbow =  function (num_leds, pixelData, offset, stripState) {
+var rainbow =  function ( stripState, offset) {
 
-    for (var i = 0; i < num_leds; i++) {
-        pixelData[i] = colorwheel((offset + i) % 256);
+    var NUM_LEDS = stripState.numLEDS;
+
+    for (var i = 0; i < NUM_LEDS; i++) {
+        stripState.pixelData[i] = colorwheel((offset + i) % 256);
     }
     offset = (offset + 1) % 256;
-    stripState.render(pixelData);
+    stripState.render();
     return offset;
 
 };
@@ -44,24 +46,24 @@ var rainbow =  function (num_leds, pixelData, offset, stripState) {
 /**
  * Start the rainbow effect
  * @param {number} NUM_LEDS - The number of leds
- * @param {object} pixelData - The pixel data
  * @param {object} interval - The interval object
  * @param {number} refreshRate - The upodate rate for the effect
  * @returns {object} - The interval referance
  */
 
-var startRainbow = function  ( pixelData, interval,  stripState, refreshRate = (10000/30)){
-  var NUM_LEDS = stripState.numLEDS;
+var startRainbow = function  (  stripState, refreshRate = (10000/30)){
+
     var offSet= 0;
-    interval = setInterval(function () {
-        offSet  = rainbow(NUM_LEDS, pixelData, offSet, stripState);
+
+    stripState.interval = setInterval(function () {
+        offSet  = rainbow( stripState,  offSet);
 
     }, refreshRate);
 
     //set the strip properties
     stripState.setMode('effects', 'rainbow', 'started');
     stripState.power = true;
-    return interval;
+    //return interval;
 };
 
 module.exports.startRainbow = startRainbow;
