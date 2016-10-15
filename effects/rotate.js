@@ -16,7 +16,7 @@ var rotate =  function (stripState){
     //Copy the type array to a genric array so that we can push and unshifted
     var tempArray =[];
     for(var i=0; i<stripState.numLEDS; i++){
-        tempArray[i] = stripState.stripState.pixelData[i];
+        tempArray[i] = stripState.pixelData[i];
     }
     //Get and remove the last value
     var pop_value = tempArray.pop();

@@ -2,7 +2,6 @@
 let express = require('express');
 let router = express.Router();
 let color = require('../effects/color');
-var colorHelper = require('../helpers/colorHelper').colorHelper;
 
 
 router.post('/', function(req, res) {

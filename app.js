@@ -133,7 +133,7 @@ var powerRoute = require('./routes/power');
 var effects = require('./routes/effects');
 var routes = require('./routes/index');
 var brightness = require('./routes/brightness');
-var color = require('./routes/color');
+var colorRoute = require('./routes/color');
 var state = require('./routes/state');
 var scene = require('./routes/scene');
 
@@ -151,7 +151,7 @@ app.use('/', routes);
 app.use('/api/power', powerRoute);
 app.use('/api/effects', effects);
 app.use('/api/brightness', brightness);
-app.use('/api/color', color);
+app.use('/api/color', colorRoute);
 app.use('/api/state', state);
 app.use('/api/scene', scene);
 
