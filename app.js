@@ -1,31 +1,32 @@
 //Default imports
 'use strict';
 
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+const express = require('express');
+const path = require('path');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const config = require('config');
 
-var router = express.Router();
+const router = express.Router();
 
 //effects
-var rawColor = require('./effects/raw');
-var color = require('./effects/color');
+const rawColor = require('./effects/raw');
+const color = require('./effects/color');
 
-var app = express();
-
+const app = express();
+const networkConfig = config.get('serverProperties.networkConfiguration');
 
 //include socket stuff
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
 
 //UDP IMPORT
-var UDP_PORT = 6883;
-var HOST = server.address.address;
-var dgram = require('dgram');
-var server_udp = dgram.createSocket('udp4');
+const UDP_PORT = networkConfig.udp_port;
+const HOST = server.address.address;
+const dgram = require('dgram');
+const server_udp = dgram.createSocket('udp4');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -39,13 +40,18 @@ app.use(function(req, res, next) {
 server_udp.bind(UDP_PORT, HOST);
 
 //set up and intialize the pixels
-var NUM_LEDS = parseInt(process.argv[2], 60) || 60 ;
-var previousState= {};
-var previousStateArray =  new Uint32Array(NUM_LEDS);
-previousState.previousStateArray = previousStateArray;
 
-let StripState = require('./helpers/stripState');
-let stripState = new StripState.StripState(false, NUM_LEDS, 255, 'off' , 'off', 'stopped');
+
+
+//when support comes for multiple outs they will be saved in a db
+const stripConfig = config.get('serverProperties.stripProperties');
+console.log(stripConfig);
+const StripState = require('./helpers/stripState');
+const stripState = new StripState.StripState(false, stripConfig.num_leds,  255, 'off' , 'off', 'stopped' , stripConfig.location, stripConfig.strandType);
+
+let previousState= {};
+let previousStateArray =  new Uint32Array(stripConfig.num_leds);
+previousState.previousStateArray = previousStateArray;
 
 //pass the strip and previous state as global array
 app.set('stripState', stripState);
@@ -64,7 +70,7 @@ process.on('SIGINT', function() {
 
 //UDP listener
 server_udp.on('listening', function() {
-  var address = server.address();
+  const address = server.address();
   console.log(address);
 });
 
@@ -129,13 +135,13 @@ io.on('connection', function(socket) {
 });
 
 //include routes
-var powerRoute = require('./routes/power');
-var effects = require('./routes/effects');
-var routes = require('./routes/index');
-var brightness = require('./routes/brightness');
-var colorRoute = require('./routes/color');
-var state = require('./routes/state');
-var scene = require('./routes/scene');
+const powerRoute = require('./routes/power');
+const effects = require('./routes/effects');
+const routes = require('./routes/index');
+const brightness = require('./routes/brightness');
+const colorRoute = require('./routes/color');
+const state = require('./routes/state');
+const scene = require('./routes/scene');
 
 
 app.use(logger('dev'));
@@ -143,6 +149,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
+
+//add routes to apps
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public/dist')));
 app.use('/bower_components', express.static(__dirname + '/bower_components'));
@@ -159,7 +167,7 @@ app.use('/api/scene', scene);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+  const err = new Error('Not Found');
   err.status = 404;
   next(err);
 });

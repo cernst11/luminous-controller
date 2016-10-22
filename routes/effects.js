@@ -31,6 +31,9 @@ router.post('/:effect', function(req, res) {
       case 'rawColor':
         rawColor.raw(req.body.colorString, stripState);
         break;
+      case 'raw':
+        rawColor.raw(req.body.colorString, stripState);
+        break;
       }
 
       res.json({

@@ -11,8 +11,10 @@ var http = require('http');
 /**
  * Get port from environment and store in Express.
  */
+const config = require('config');
+const networkConfig = config.get('serverProperties.networkConfiguration');
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || networkConfig.http_port );
 app.set('port', port);
 
 /**

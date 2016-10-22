@@ -1,0 +1,18 @@
+{
+
+  "serverProperties": {
+    "stripProperties": {
+      "num_leds" : 60,
+      "location" : "Office",
+      "strandType" : "ws2812"
+
+    },
+    "networkConfiguration": {
+      "host": "localhost",
+      "http_port": 3000,
+      "udp_port" : 6883,
+      "allow_udp" : true
+
+    }
+  }
+}
