@@ -96,6 +96,7 @@ io.on('connection', function(socket) {
   });
 
   socket.on('changeColor', function(data){
+    clearInterval(stripState.interval);
     color.setColor( data.color, stripState);
     socket.emit('state', {
       stripState: stripState,

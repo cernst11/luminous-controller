@@ -4,7 +4,7 @@
  */
 
 /**
- * Breath the current state of the light strip
+ * Breathe the current state of the light strip
  * @param {object | date} startValue - A dateobject to start the start of the wave
  * @param {object} stripState - The strip object to control
  */
@@ -20,9 +20,8 @@ var breathe = function (startValue, stripState) {
 /**
  * anonymous function - Start the breate function
 
- * @param  {object} interval  -     The interval object
+ * @param  {object} stripState  -  The light strip to control
  * @param  {number} refreshRate -  How quickly to breathe in milliseconds
- * @returns {object}                 The interval object
  */
 var  startBreathe = function (stripState, refreshRate = (1000/30)) {
 

@@ -5,12 +5,10 @@
 
 
 /**
- * var - description  - Set the strip to a single color
+ * var  - Set the strip to a single color
  *
- * @param  {number} num_pixels - The number of pixels
- * @param  {uint32array} pixelData  - The pixel data
  * @param  {number} color      - The hex integer color
- * @param  {boolean} fadeIn     - Fade in to the color
+ * @param  {object} stripstate  - The strip object to control
  */
 var color = function(color, stripState) {
 

@@ -2,18 +2,19 @@
 
 var ws281x = require('rpi-ws281x-native');
 var colorHelper = require('../helpers/colorHelper').colorHelper;
-
+/** Class representing a light strip object. */
 class StripState    {
 
 
     /**
-     * constructor - Default constructor for the object
-     *
-     * @param  {booelan} power        description
-     * @param  {number} brightness   description
-     * @param  {string} selectedMode The selected mode ex. effects/ scene
-     * @param  {string} modeType     The type of mode ex. breathe/ intense
-     * @param  {string} activeState  Is the mode active
+     * Create the object
+     * @param  {booelan} power    -    description
+     * @param  {number} brightness  - description
+     * @param  {string} selectedMode - The selected mode ex. effects/ scene
+     * @param  {string} modeType  -   The type of mode ex. breathe/ intense
+     * @param  {string} activeState - Is the mode active
+     * @param  {string} location  -  Where the light is located
+     * @param  {string} strandType - The type of strand to control
      */
     constructor(power, num_leds, brightness, selectedMode, modeType, activeState, location = 'Living Room', strandType = 'ws2812'){
       this._numLEDS = num_leds;
@@ -63,7 +64,7 @@ class StripState    {
     /**
      * setBrightness - Set the bnightness field
      *
-     * @param  {number} brightness description
+     * @param  {number} brightness brightness value of strand 0-255
      */
     set brightness(brightness){
       //force it to be between 0 and 255
@@ -112,7 +113,7 @@ class StripState    {
 
             if (x !== 'interval' ) {
                 result[x] = this[x];
-            }  
+            }
             if (x === 'pixelData' ) {
                 result[x] = colorHelper.arrayToHexString(this[x]);
             }

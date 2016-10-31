@@ -8,9 +8,7 @@ var black = 0x000000;
 
 /**
  * Display the lights
- * @param {number} lit - The iteration in the loop
- * @param {object} ws281x - The strip object
- * @param {number} colorValue - The hex color value to set
+ * @param {object} stripState - The strip to control
  */
 var rotate =  function (stripState){
     //Copy the type array to a genric array so that we can push and unshifted
@@ -32,12 +30,11 @@ var rotate =  function (stripState){
 
 /**
  * Start the rainbow effect
- * @param {number} NUM_LEDS - The number of leds
- * @param {object} interval - The interval object
+ * @param {object} stripState - The strip to control
  * @param {number} refreshRate - The upodate rate for the effect
  * @param {number} colorValue - The hex color value to set
- * @param {number} litLeds - The number of lights to light to lightup
- * @returns {object} - The interval object
+ * @param {number} fillColorValue - The color to fill thre remaing part of the stand with
+ * @param {number} litLeds - The number of lights to lightup
  */
 var startRotate = function  ( stripState, refreshRate = (1000/10), colorValue = 0xFFFFFF, fillColorValue = 0x000000, litLeds = 10 ){
 

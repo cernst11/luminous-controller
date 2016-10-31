@@ -52,34 +52,6 @@ var colorHelper = {
   },
 
 
-
-/**
- * setHslBrightness - Set the brighhtness via HSL manipulation
- *
- * @param  {number} num_pixels        description
- * @param  {object} ws281x            description
- * @param  {uint32array} pixelData         description
- * @param  {number} brightnessPercent description
- * @return {type}                   description
- */
-setHslBrightness: function(num_pixels, ws281x, pixelData, brightnessPercent) {
-
-    for (var i = 0; i < num_pixels; i++) {
-      var color = this.hexToHexString(pixelData[i]);
-      console.log(pixelData[i]);
-      color = this.tinyColor(color);
-      var hslColor = color.toHsl();
-      hslColor.l = (brightnessPercent / 100);
-      var newColor = this.tinyColor(hslColor);
-      pixelData[i] = parseInt(newColor.toHex(), 16);
-
-    }
-    ws281x.render(pixelData);
-
-  },
-
-
-
   /**
    * rgb2Int - Convert rgb value to hex integer
    *

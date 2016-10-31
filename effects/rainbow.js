@@ -8,8 +8,7 @@ var colorHelper = require('../helpers/colorHelper').colorHelper;
 
 /**
  * Helper funnction to calculate colors
- * @param pos - Position in the color wheel
- * @returns {*} Color Object
+ * @param {number} pos - Position in the color wheel
  */
 function colorwheel(pos) {
     pos = 255 - pos;
@@ -25,10 +24,8 @@ function colorwheel(pos) {
 
 /**
  * The effect for rainbow mode
- * @param {number} num_leds - The number of leds to use
- * @param {uint32array} stripState.pixelData - The stripState.pixelData object to use
- * @param {number} offset - The offset to use outside of the setInterval function
  * @param {object} stripState - The strip object to control
+ * @param {number} offset - The offset to use outside of the setInterval function
  */
 var rainbow =  function ( stripState, offset) {
 
@@ -45,10 +42,8 @@ var rainbow =  function ( stripState, offset) {
 
 /**
  * Start the rainbow effect
- * @param {number} NUM_LEDS - The number of leds
- * @param {object} interval - The interval object
+ * @param {object} stripState - The strip object to control
  * @param {number} refreshRate - The upodate rate for the effect
- * @returns {object} - The interval referance
  */
 
 var startRainbow = function  (  stripState, refreshRate = (10000/30)){
