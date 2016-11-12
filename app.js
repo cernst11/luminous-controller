@@ -49,6 +49,7 @@ console.log(stripConfig);
 const StripState = require('./helpers/stripState');
 const stripState = new StripState.StripState(false, stripConfig.num_leds,  255, 'off' , 'off', 'stopped' , stripConfig.location, stripConfig.strandType);
 
+
 let previousState= {};
 let previousStateArray =  new Uint32Array(stripConfig.num_leds);
 previousState.previousStateArray = previousStateArray;

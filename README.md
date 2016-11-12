@@ -28,6 +28,8 @@ Install `bower` dependencies for frontend (This may be removed and moved in to s
 
     bower install
     Wait some more....
+    Edit the luminous-chrome tag to your raspberry pi ip address in  app/index.html 
+    Ex.  <luminous-chrome deviceurl="http://192.168.1.112:3000"></luminous-chrome>
     gulp to compile front end 
   
 To run -- Important must be ran as sudo

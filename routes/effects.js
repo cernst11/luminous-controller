@@ -6,13 +6,17 @@ let breathe = require('../effects/breathe');
 let theaterChase = require('../effects/theaterChase');
 let rotate = require('../effects/rotate');
 let rawColor = require('../effects/raw');
+let ease = require('../effects/ease');
+
+
 
 router.post('/:effect', function(req, res) {
 
     let stripState = req.app.get('stripState');
+    let previousStateArray = req.app.get('previousStateArray');
     let effect = req.params.effect;
 
-      console.log(req.body);
+    console.log(req.body);
     clearInterval(stripState.interval);
     stripState.brightness = 255;
     switch (effect) {
@@ -34,7 +38,15 @@ router.post('/:effect', function(req, res) {
       case 'raw':
         rawColor.raw(req.body.colorString, stripState);
         break;
+       case 'ease' : 
+        if(req.body.color === 'previous'){
+          ease.startEase(stripState, req.body.ease, previousStateArray);
+        }else{
+          ease.startEase(stripState, req.body.ease, req.body.color, req.body.refreshRate, req.body.duration);
+        }
+        break;
       }
+     
 
       res.json({
           stripState: stripState

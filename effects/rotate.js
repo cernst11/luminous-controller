@@ -10,19 +10,14 @@ var black = 0x000000;
  * Display the lights
  * @param {object} stripState - The strip to control
  */
-var rotate =  function (stripState){
-    //Copy the type array to a genric array so that we can push and unshifted
-    var tempArray =[];
-    for(var i=0; i<stripState.numLEDS; i++){
-        tempArray[i] = stripState.pixelData[i];
-    }
-    //Get and remove the last value
-    var pop_value = tempArray.pop();
-    //move the last value to the start of the array
-    tempArray.unshift(pop_value);
-    //copy array back to orginal array
-    for(i=0; i<tempArray.length; i++){
-        stripState.pixelData[i] = tempArray[i];
+var rotate = function (stripState) {
+    //roatate the values in the array
+    for (let i = 0; i < 1; i++) {
+        for (let j = stripState.pixelData.length - 1; j > 0; j--) {
+            let temp = stripState.pixelData[j];
+            stripState.pixelData[j] = stripState.pixelData[j - 1];
+            stripState.pixelData[j - 1] = temp;
+        }
     }
 
     stripState.render();
@@ -36,22 +31,22 @@ var rotate =  function (stripState){
  * @param {number} fillColorValue - The color to fill thre remaing part of the stand with
  * @param {number} litLeds - The number of lights to lightup
  */
-var startRotate = function  ( stripState, refreshRate = (1000/10), colorValue = 0xFFFFFF, fillColorValue = 0x000000, litLeds = 10 ){
+var startRotate = function (stripState, refreshRate = (1000 / 10), colorValue = 0xFFFFFF, fillColorValue = 0x000000, litLeds = 10) {
 
     //set Color to 0
-    color.setColor( black, stripState);
+    color.setColor(black, stripState);
 
     //set the default
-    for(var i=0; i<=litLeds -1; i++){
-        stripState.pixelData[i]=colorValue;
+    for (var i = 0; i <= litLeds - 1; i++) {
+        stripState.pixelData[i] = colorValue;
     }
-    for(var j=litLeds; j<=stripState.numLEDS ; j++){
-        stripState.pixelData[j]=fillColorValue;
+    for (var j = litLeds; j <= stripState.numLEDS; j++) {
+        stripState.pixelData[j] = fillColorValue;
     }
 
     stripState.interval = setInterval(function () {
         rotate(stripState);
-    }, refreshRate );
+    }, refreshRate);
 
 
     //set the strip properties
