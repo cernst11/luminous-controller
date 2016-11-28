@@ -6,4 +6,7 @@ dist
 npm-debug.log
 .divshot-cache
 public/dist/*
-
+.vscode
+server.crt
+server.csr
+server.key

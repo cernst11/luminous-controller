@@ -7,6 +7,9 @@
 var app = require('../app').app;
 var debug = require('debug')('www:server');
 var http = require('http');
+const fs = require('fs');
+const spdy = require('spdy');
+const path = require('path');
 
 /**
  * Get port from environment and store in Express.
@@ -21,7 +24,25 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = require('../app').server;
+//var server = require('../app').server;
+
+const serverKey = path.join(__dirname, '..', 'server.key');
+const cert = path.join(__dirname, '..', 'server.crt');
+
+const options = {
+    key: fs.readFileSync(serverKey),
+    cert:  fs.readFileSync(cert)
+}
+var server = spdy
+  .createServer(options, app)
+  .listen(port, (error) => {
+    if (error) {
+      console.error(error)
+      return process.exit(1)
+    } else {
+      console.log('Listening on port: ' + port + '.')
+    }
+  })
 
 /**
  * Listen on provided port, on all network interfaces.

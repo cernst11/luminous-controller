@@ -3,6 +3,8 @@
 
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
+const spdy = require('spdy');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
@@ -16,6 +18,11 @@ const rawColor = require('./effects/raw');
 const color = require('./effects/color');
 
 const app = express();
+
+
+
+
+
 const networkConfig = config.get('serverProperties.networkConfiguration');
 
 //include socket stuff
@@ -144,6 +151,7 @@ const brightness = require('./routes/brightness');
 const colorRoute = require('./routes/color');
 const state = require('./routes/state');
 const scene = require('./routes/scene');
+
 
 
 app.use(logger('dev'));
