@@ -26,14 +26,6 @@ Install `npm` dependencies for REST and Websocket controller
     Wait some more.....
     Wait a few more minutes.....
 
-Install `bower` dependencies for frontend (This may be removed and moved in to seperate project the individual polymer elements already are)
-
-    bower install
-    Wait some more....
-    Edit the luminous-chrome tag to your raspberry pi ip address in  app/index.html 
-    Ex.  <luminous-chrome deviceurl="http://192.168.1.112:3000"></luminous-chrome>
-    gulp to compile front end 
-
 Configure your server and light properties in config/default.json
 
     strip properties - The properties of the 
