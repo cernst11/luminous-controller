@@ -3,6 +3,8 @@
 
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
+const spdy = require('spdy');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
@@ -16,11 +18,16 @@ const rawColor = require('./effects/raw');
 const color = require('./effects/color');
 
 const app = express();
+
+
+
+
+
 const networkConfig = config.get('serverProperties.networkConfiguration');
 
 //include socket stuff
 const server = require('http').Server(app);
-const io = require('socket.io')(server);
+// const io = require('socket.io')(server);
 
 //UDP IMPORT
 const UDP_PORT = networkConfig.udp_port;
@@ -33,7 +40,7 @@ const server_udp = dgram.createSocket('udp4');
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.io = io;
+  //res.io = io;
   next();
 });
 
@@ -90,51 +97,51 @@ if(initalColor === 0x000000){
 
 }
 
-io.on('connection', function(socket) {
+// io.on('connection', function(socket) {
 
-  socket.emit('stripProperties', {
-    stripState: stripState,
-  });
+//   socket.emit('stripProperties', {
+//     stripState: stripState,
+//   });
 
-  socket.on('changeColor', function(data){
-    clearInterval(stripState.interval);
-    color.setColor( data.color, stripState);
-    socket.emit('state', {
-      stripState: stripState,
-    });
-  });
+//   socket.on('changeColor', function(data){
+//     clearInterval(stripState.interval);
+//     color.setColor( data.color, stripState);
+//     socket.emit('state', {
+//       stripState: stripState,
+//     });
+//   });
 
-  socket.on('changeBrightness', function(data){
-    stripState.brightness = data.brightness;
-    socket.emit('state', {
-      stripState: stripState,
-    });
-  });
+//   socket.on('changeBrightness', function(data){
+//     stripState.brightness = data.brightness;
+//     socket.emit('state', {
+//       stripState: stripState,
+//     });
+//   });
 
-  socket.on('getStripProperties', function(data) {
-    console.log(data);
-    socket.emit('stripState', {
-      stripState: stripState,
-    });
+//   socket.on('getStripProperties', function(data) {
+//     console.log(data);
+//     socket.emit('stripState', {
+//       stripState: stripState,
+//     });
 
-  });
+//   });
 
-  socket.on('colorStatus', function(data) {
-    console.log(data);
-    socket.emit('color', {
-    });
+//   socket.on('colorStatus', function(data) {
+//     console.log(data);
+//     socket.emit('color', {
+//     });
 
-  });
+//   });
 
-  socket.on('rawColor', function(data) {
-    rawColor.raw( data.message, stripState);
-    socket.emit('color', {
-      stripState: stripState
-    });
+//   socket.on('rawColor', function(data) {
+//     rawColor.raw( data.message, stripState);
+//     socket.emit('color', {
+//       stripState: stripState
+//     });
 
-  });
+//   });
 
-});
+// });
 
 //include routes
 const powerRoute = require('./routes/power');
@@ -144,6 +151,7 @@ const brightness = require('./routes/brightness');
 const colorRoute = require('./routes/color');
 const state = require('./routes/state');
 const scene = require('./routes/scene');
+
 
 
 app.use(logger('dev'));
